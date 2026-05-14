@@ -154,8 +154,8 @@ export default function Hero() {
       const scrollTrigger = ScrollTrigger.create({
         trigger: sectionRef.current,
         start: "top top",
-        end: "+=1600%",      // Longer scroll distance = slower text transitions
-        scrub: 1.5,          // Lower scrub = more responsive but still smooth
+        end: "+=1000%",      // Reduced scroll distance so text appears faster
+        scrub: 2.0,          // Increased scrub for smoother, less jumpy transitions
         pin: true,
         anticipatePin: 1,
         pinSpacing: true,    // CRITICAL: adds spacer for smooth next section transition

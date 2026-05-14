@@ -2,83 +2,112 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
+const SocialIcons = {
+  Instagram: () => (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zM17.5 6.5h.01" /></svg>
+  ),
+  Facebook: () => (
+    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
+  ),
+  Youtube: () => (
+    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
+  )
+};
+
 const Footer = () => {
+  const locationLinks = [
+    { label: "Gurgaon", href: "/gurgaon" },
+    { label: "Delhi", href: "/delhi" },
+    { label: "Indore", href: "/indore" },
+    { label: "Lucknow", href: "/lucknow" },
+    { label: "Jaipur", href: "/jaipur" },
+    { label: "Kolkata", href: "/kolkata" },
+    { label: "Varanasi", href: "/varanasi" },
+    { label: "Agra", href: "/agra" },
+    { label: "Cyberhub", href: "/cyberhub" },
+    { label: "Phase 2", href: "/phase-2" },
+    { label: "Phase 3", href: "/phase-3" },
+    { label: "South City 1", href: "/south-city-1" },
+    { label: "South City 2", href: "/south-city-2" },
+    { label: "Sector 44", href: "/sector-44" },
+    { label: "Sector 46", href: "/sector-46" },
+  ];
+
   const sections = [
-    {
-      title: "Services",
-      links: [
-        { label: "Kidney Stone Treatment", href: "/specialties/kidney-stone-treatment" },
-        { label: "Urology & Andrology", href: "/specialties/urology-and-andrology" },
-        { label: "Gallbladder Stone Treatment", href: "/specialties/gallbladder-stone-treatment" },
-      ],
-    },
     {
       title: "Treatments",
       links: [
         { label: "RIRS Laser Surgery", href: "/rirs" },
         { label: "ESWL Lithotripsy", href: "/eswl" },
         { label: "URSL Treatment", href: "/ursl" },
-        { label: "PCNL Surgery", href: "/pcnl" },
-        { label: "TURP / HoLEP", href: "/turp" },
+        { label: "Kidney Stone Surgery", href: "/gurgaon" },
+        { label: "Gall Bladder Surgery", href: "/specialties" },
       ],
     },
     {
       title: "Quick Links",
       links: [
-        { label: "Cure Stone AI", href: "/checker" },
-        { label: "Book Free Consultation ", href: "/book" },
+        { label: "CureStone AI", href: "/checker" },
+        { label: "Book Free Consultation", href: "/book" },
         { label: "Health Blog", href: "/blog" },
+        { label: "Sitemap", href: "/sitemap.xml" },
       ],
     },
   ];
 
   return (
-    <footer className="relative bg-foreground pt-24 pb-12 overflow-hidden text-white">
-      {/* Background Glow */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 blur-[120px] rounded-full -mr-32 -mt-32 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full -ml-32 -mb-32 pointer-events-none" />
-
+    <footer className="relative bg-[#08090A] pt-20 pb-10 overflow-hidden text-white border-t border-white/5">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-        <div className="grid lg:grid-cols-[1.5fr_1fr_1fr_1fr_1.5fr] gap-12 lg:gap-16 mb-20">
 
-          {/* Brand Col */}
-          <div className="space-y-8">
-            <Link href="/" className="inline-block group no-underline">
-              <div className="relative w-40 h-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_0.8fr_0.8fr_1.2fr] gap-12 lg:gap-8 mb-16">
+
+          {/* Brand & Info */}
+          <div className="flex flex-col gap-6">
+            <Link href="/" className="inline-block w-fit no-underline">
+              <div className="relative w-44 h-12">
                 <Image
                   src="https://theCurestone.com/wp-content/uploads/2021/05/PNG-Black-e1664728676618.png"
-                  alt="Cure Stone Logo"
+                  alt="Cure Stone Hospital"
                   fill
                   className="object-contain object-left brightness-0 invert"
                   unoptimized
                 />
               </div>
             </Link>
-
-            <p className="text-white/60 font-medium leading-relaxed">
-              Pioneering excellence in urology and kidney stone care across Delhi NCR.
+            <p className="text-white/50 text-[13px] leading-relaxed max-w-sm">
+              CureStone Hospital is a premier urology destination in Gurgaon, delivering precision-driven laser kidney stone surgeries and comprehensive urinary care.
             </p>
-
-            <div className="flex gap-4">
-              {['f', 'in', '𝕏', '💬'].map((social, i) => (
-                <a key={i} href="#" className="w-10 h-10 border border-white/20 rounded-xl flex items-center justify-center text-white/80 hover:bg-primary transition-all hover:border-primary hover:text-white group">
-                  <span className="text-sm font-bold group-hover:scale-110 transition-transform">{social}</span>
-                </a>
-              ))}
+            <div className="space-y-3 text-[13px]">
+              <a href="tel:+918800263884" className="flex items-center gap-3 text-white/70 no-underline">
+                <span className="opacity-50">📞</span> +91 88002 63884
+              </a>
+              <a href="mailto:info@thecurestone.com" className="flex items-center gap-3 text-white/70 no-underline">
+                <span className="opacity-50">✉</span> info@thecurestone.com
+              </a>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <a href="https://www.youtube.com/@cure_stone" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 hover:bg-[#FF0000] transition-all">
+                <SocialIcons.Youtube />
+              </a>
+              <a href="https://www.instagram.com/the_cure_stone/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 hover:bg-primary transition-all">
+                <SocialIcons.Instagram />
+              </a>
+              <a href="https://www.facebook.com/curestone/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 hover:bg-primary transition-all">
+                <SocialIcons.Facebook />
+              </a>
             </div>
           </div>
 
-          {/* Nav Maps */}
+          {/* Links Sections */}
           {sections.map((section, idx) => (
-            <div key={idx} className="space-y-8">
-              <h4 className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">
+            <div key={idx} className="flex flex-col gap-6">
+              <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-[0.25em]">
                 {section.title}
               </h4>
-              <ul className="space-y-4 list-none p-0">
+              <ul className="flex flex-col gap-3 list-none p-0 m-0">
                 {section.links.map((link, lIdx) => (
                   <li key={lIdx}>
-                    <Link href={link.href} className="text-sm font-medium text-white/70 hover:text-primary transition-colors no-underline flex items-center gap-2 group">
-                      <span className="w-1 h-1 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Link href={link.href} className="text-[13px] text-white/60 no-underline">
                       {link.label}
                     </Link>
                   </li>
@@ -87,38 +116,85 @@ const Footer = () => {
             </div>
           ))}
 
-          {/* Map Section */}
-          <div className="space-y-8">
-            <h4 className="text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">
-              Visit Our Center
+          {/* Locations */}
+          <div className="flex flex-col gap-6">
+            <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-[0.25em]">
+              Areas Served
             </h4>
-            <div className="rounded-2xl overflow-hidden border border-white/10  opacity-80    transition-all duration-500 shadow-2xl">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3508.3183934021354!2d77.06771327549376!3d28.439816975770583!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d19559d21f213%3A0xa736733167a5023b!2sCure%20Stone!5e0!3m2!1sen!2sin!4v1776060126904!5m2!1sen!2sin"
-                width="100%"
-                height="160"
-                style={{ border: 0 }}
-                allowFullScreen={true}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+              {locationLinks.map((link, lIdx) => (
+                <Link
+                  key={lIdx}
+                  href={link.href}
+                  className="text-[12px] text-white/50 no-underline"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
-            <p className="text-[10px] font-bold text-white/40 leading-relaxed uppercase tracking-widest">
-              Sector 46, Gurgaon, <br /> Haryana 122003
-            </p>
+          </div>
+        </div>
+
+        {/* Map Section */}
+        <div className="grid lg:grid-cols-2 gap-12 items-center py-12 border-y border-white/5 mb-12">
+          <div className="rounded-2xl overflow-hidden border border-white/10 aspect-video lg:aspect-auto lg:h-64 relative">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3508.3183934021354!2d77.06771327549376!3d28.439816975770583!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d19559d21f213%3A0xa736733167a5023b!2sCure%20Stone!5e0!3m2!1sen!2sin!4v1776770895170!5m2!1sen!2sin"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen={true}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="opacity-90"
+              title="Cure Stone Hospital Location"
+            ></iframe>
+          </div>
+          <div className="space-y-6">
+            <div>
+              <h4 className="text-primary text-sm font-bold uppercase tracking-widest mb-2">Visit Our Hospital</h4>
+              <p className="text-xl font-medium text-white/90">Sector 46, Gurugram, Haryana</p>
+              <p className="text-white/50 text-sm mt-1">CureStone Private Limited, 122003</p>
+            </div>
+            <div className="flex flex-wrap gap-8">
+              <div>
+                <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Consultation Hours</p>
+                <p className="text-sm text-white/70 font-medium">9:00 AM – 8:00 PM</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Emergency Service</p>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full" />
+                  <p className="text-sm text-white/70 font-medium text-green-500/80">Available 24/7</p>
+                </div>
+              </div>
+            </div>
+            <a
+              href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3508.3183934021354!2d77.06771327549376!3d28.439816975770583!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d19559d21f213%3A0xa736733167a5023b!2sCure%20Stone!5e0!3m2!1sen!2sin!4v1776770895170!5m2!1sen!2sin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest no-underline"
+            >
+              Get Directions <span>→</span>
+            </a>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8">
-          <p className="text-xs font-bold text-white/30 uppercase tracking-widest text-center md:text-left">
-            © 2025 Cure Stone. All rights reserved. <br className="md:hidden" />
-            <span className="text-white/50 ml-1">Designed with ♥ by Gulshan Chawla.</span>
+        <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+          <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
+            © 2026 CureStone Hospital. All rights reserved.
           </p>
-          <div className="flex items-center gap-8">
-            <Link href="/terms" className="text-[10px] font-black text-white/30 hover:text-white uppercase tracking-widest no-underline">Terms</Link>
-            <Link href="/privacy" className="text-[10px] font-black text-white/30 hover:text-white uppercase tracking-widest no-underline">Privacy</Link>
-            <Link href="/sitemap" className="text-[10px] font-black text-white/30 hover:text-white uppercase tracking-widest no-underline">Sitemap</Link>
+          <div className="flex items-center gap-6">
+            {['Privacy', 'Terms', 'Sitemap', 'Robots'].map((item) => (
+              <Link
+                key={item}
+                href={`/${item.toLowerCase()}`}
+                className="text-[10px] font-bold text-white/20 uppercase tracking-widest no-underline"
+              >
+                {item}
+              </Link>
+            ))}
           </div>
         </div>
       </div>

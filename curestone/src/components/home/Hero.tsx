@@ -1,332 +1,362 @@
+
 "use client";
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { motion, useScroll, useTransform, useSpring, AnimatePresence, useAnimationFrame } from "framer-motion";
+import React, { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "lenis";
 
-interface Scene {
-  id: number;
-  start: number;
-  end: number;
-  title: string;
-  subtitle: string;
-  badge?: string;
-}
+gsap.registerPlugin(ScrollTrigger);
 
-const SCENES: Scene[] = [
+const STAGES = [
   {
-    id: 1,
-    start: 0,
-    end: 0.15,
-    title: "Welcome to Cure Stone",
-    subtitle: "",
-    badge: "Dr. Deepanshu Gupta"
+    tag: "Dr. Deepanshu Gupta",
+    line1: "WELCOME TO",
+    line2: "cure stone",
+    desc: "",
   },
   {
-    id: 2,
-    start: 0.25,
-    end: 0.45,
-    title: "India's Best Kidney Stone Treatment",
-    subtitle: "1st Ever to start Fans-RIRS in North India — By Dr. Deepanshu Gupta.",
-    badge: "Precision Care"
+    tag: "Precision Care",
+    line1: "INDIA'S BEST",
+    line2: "kidney stone treatment",
+    desc: "1st Ever to start Fans-RIRS in North India — By Dr. Deepanshu Gupta.",
   },
   {
-    id: 3,
-    start: 0.55,
-    end: 0.75,
-    title: "Unmatched Success Rate",
-    subtitle: "Maintaining a 98% stone-free success rate over 30,000+ patient lives.",
-    badge: "98% Success"
+    tag: "98% Success",
+    line1: "UNMATCHED",
+    line2: "success rate",
+    desc: "Maintaining a 98% stone-free success rate over 30,000+ patient lives.",
   },
   {
-    id: 4,
-    start: 0.85,
-    end: 1,
-    title: "Take Control of Your Health",
-    subtitle: "Consult India's leading kidney specialist today at Cure Stone.",
-    badge: "Book Free Consultation "
-  }
+    tag: "Book Free Consultation",
+    line1: "TAKE CONTROL",
+    line2: "of your health",
+    desc: "Consult India's leading kidney specialist today at Cure Stone.",
+  },
 ];
 
-const FRAME_COUNT = 120;
+// Evenly distributed centers for 4 stages
+const CENTERS = [0.10, 0.36, 0.63, 0.90];
+const HOLD = 0.05;    // balanced hold to prevent overlap
+const FADE = 0.06;    // smoother fade transitions
 
-export default function ScrollCanvasHero() {
+function calcOpacity(p: number, center: number): number {
+  const dist = Math.abs(p - center);
+  if (dist <= HOLD) return 1;
+  if (dist <= HOLD + FADE) {
+    // Smooth ease-out curve for fade
+    const t = (dist - HOLD) / FADE;
+    return 1 - (t * t); // quadratic ease-out
+  }
+  return 0;
+}
+
+function calcY(p: number, center: number): number {
+  const dist = Math.abs(p - center);
+  const dir = p < center ? 1 : -1;
+  if (dist <= HOLD) return 0;
+  const t = Math.min((dist - HOLD) / FADE, 1);
+  // Smoother ease-out for movement
+  return dir * 40 * (t * t);
+}
+
+export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [images, setImages] = useState<HTMLImageElement[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const videoWrapRef = useRef<HTMLDivElement>(null);
+  const vignetteRef = useRef<HTMLDivElement>(null);
+  const buttonsRef = useRef<HTMLDivElement>(null);
+  const scrollHintRef = useRef<HTMLDivElement>(null);
+  const spacerRef = useRef<HTMLDivElement>(null);
+  const vid1Ref = useRef<HTMLVideoElement>(null);
+  const vid2Ref = useRef<HTMLVideoElement>(null);
 
-  // Motion progress
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
+  // Per-stage element refs
+  const tagRefs = useRef<(HTMLSpanElement | null)[]>([null, null, null, null]);
+  const line1Refs = useRef<(HTMLSpanElement | null)[]>([null, null, null, null]);
+  const line2Refs = useRef<(HTMLSpanElement | null)[]>([null, null, null, null]);
+  const descRefs = useRef<(HTMLParagraphElement | null)[]>([null, null, null, null]);
 
-  // Apple-style heavy smooth spring
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 45,
-    damping: 35,
-    restDelta: 0.0001
-  });
+  // quickTo tweener storage
+  const qOpacity = useRef<(((v: number) => void) | null)[][]>([[], [], [], []]);
+  const qY = useRef<(((v: number) => void) | null)[][]>([[], [], [], []]);
+  const qBlur = useRef<(((v: number) => void) | null)[][]>([[], [], [], []]);
 
-  const lastFrameIndex = useRef<number>(-1);
-  const canvasSize = useRef({ width: 0, height: 0 });
-
-  // 1. High-Performance render call
-  const renderFrame = useCallback((prog: number) => {
-    const canvas = canvasRef.current;
-    if (!canvas || images.length < FRAME_COUNT) return;
-    
-    // Core optimization: opaque context for better GPU throughput
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    const frameIndex = Math.max(0, Math.min(Math.floor(prog * (FRAME_COUNT - 1)), FRAME_COUNT - 1));
-    
-    // Guard: Prevent redundant main-thread calls
-    if (frameIndex === lastFrameIndex.current) return;
-    lastFrameIndex.current = frameIndex;
-
-    const frame = images[frameIndex];
-    if (!frame) return;
-
-    const { width, height } = canvasSize.current;
-    if (width === 0 || height === 0) return;
-
-    // Draw Logic
-    const imgRatio = frame.width / frame.height;
-    const canvasRatio = width / height;
-    let drawWidth, drawHeight, offsetX, offsetY;
-
-    if (imgRatio > canvasRatio) {
-      drawHeight = height;
-      drawWidth = height * imgRatio;
-      offsetX = (width - drawWidth) / 2;
-      offsetY = 0;
-    } else {
-      drawWidth = width;
-      drawHeight = width / imgRatio;
-      offsetX = 0;
-      offsetY = (height - drawHeight) / 2;
-    }
-
-    // High performance draw
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "medium"; // Balanced
-    ctx.drawImage(frame, offsetX, offsetY, drawWidth, drawHeight);
-  }, [images]);
-
-  // 2. Hardware-Accelerated Animation Loop (Decoupled from Scroll)
-  useAnimationFrame(() => {
-    if (isLoaded) {
-      renderFrame(smoothProgress.get());
-    }
-  });
-
-  // 3. Adaptive Canvas Resizer (Capped resolution)
+  // Handle seamless video crossfade looping
   useEffect(() => {
-    const updateSize = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const rect = canvas.getBoundingClientRect();
+    const v1 = vid1Ref.current;
+    const v2 = vid2Ref.current;
+    if (!v1 || !v2) return;
+
+    const crossfadeDuration = 1.0; // 1 second crossfade
+    
+    const handleTimeUpdate = (e: Event) => {
+      const active = e.target as HTMLVideoElement;
+      const inactive = active === v1 ? v2 : v1;
       
-      // Performance Cap: Limit pixel density to 1.5x to avoid massive VRAM usage while staying sharp
-      const dpr = Math.min(window.devicePixelRatio, 1.5);
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      canvasSize.current = { width: canvas.width, height: canvas.height };
-      
-      if (isLoaded) renderFrame(smoothProgress.get());
+      // When nearing the end of the active video
+      if (active.duration && active.currentTime >= active.duration - crossfadeDuration) {
+        if (inactive.paused) {
+          inactive.currentTime = 0;
+          inactive.play().catch(() => {});
+          
+          gsap.to(inactive, { opacity: 1, duration: crossfadeDuration, ease: "none" });
+          gsap.to(active, { opacity: 0, duration: crossfadeDuration, ease: "none", onComplete: () => {
+            active.pause();
+          }});
+        }
+      }
     };
 
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
-  }, [renderFrame, smoothProgress, isLoaded]);
+    v1.addEventListener('timeupdate', handleTimeUpdate);
+    v2.addEventListener('timeupdate', handleTimeUpdate);
 
-  // 4. Advanced GPU Pre-Warming (Image pre-decoding)
+    v1.style.opacity = '1';
+    v2.style.opacity = '0';
+    v1.play().catch(() => {});
+
+    return () => {
+      v1.removeEventListener('timeupdate', handleTimeUpdate);
+      v2.removeEventListener('timeupdate', handleTimeUpdate);
+    };
+  }, []);
+
   useEffect(() => {
-    let active = true;
-    const preloadImages = async () => {
-      const loadedImages: HTMLImageElement[] = [];
-      let loaded = 0;
+    if (typeof window !== "undefined") {
+      window.history.scrollRestoration = "manual";
+      window.scrollTo(0, 0);
+    }
 
-      const promises = Array.from({ length: FRAME_COUNT }).map((_, i) => {
-        return new Promise<HTMLImageElement>((resolve) => {
-          const img = new Image();
-          const framePath = `/ezgif-213ab7655818cce8-jpg/ezgif-frame-${(i + 1).toString().padStart(3, '0')}.jpg`;
-          img.src = framePath;
-          
-          img.onload = async () => {
-            // "Apple level" optimization: Force GPU decompression before use
-            try {
-              if (img.decode) await img.decode();
-            } catch (e) {
-              console.warn("Decoding failed for frame", i);
-            }
-            loaded++;
-            if (active) setLoadingProgress(Math.round((loaded / FRAME_COUNT) * 100));
-            resolve(img);
-          };
-          loadedImages[i] = img;
+    const lenis = new Lenis({
+      duration: 1.8,        // Slower, smoother scroll
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 0.7, // Reduced speed for smoother feel
+      touchMultiplier: 1.5,
+    });
+
+    lenis.on("scroll", ScrollTrigger.update);
+
+    const ticker = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+
+    gsap.ticker.add(ticker);
+    gsap.ticker.lagSmoothing(0);
+
+    const ctx = gsap.context(() => {
+      // ── Set initial state ────────────────────────────────────────────────
+      STAGES.forEach((_, i) => {
+        const els = [tagRefs.current[i], line1Refs.current[i], line2Refs.current[i], descRefs.current[i]];
+        gsap.set(els, {
+          opacity: i === 0 ? 1 : 0,
+          y: i === 0 ? 0 : 40,
+          filter: i === 0 ? "blur(0px)" : "blur(14px)",
         });
       });
 
-      const allImages = await Promise.all(promises);
-      if (active) {
-        setImages(allImages);
-        setIsLoaded(true);
-      }
-    };
+      // ── Build quickTo tweeners with staggered durations ──
+      // Shorter durations here prevent animations from lagging behind the scroll, which was causing visual overlap
+      const durations = [0.15, 0.22, 0.28, 0.35]; // tag, line1, line2, desc
 
-    preloadImages();
-    return () => { active = false; };
+      STAGES.forEach((_, i) => {
+        const els = [tagRefs.current[i], line1Refs.current[i], line2Refs.current[i], descRefs.current[i]];
+        qOpacity.current[i] = els.map((el, j) =>
+          el ? gsap.quickTo(el, "opacity", { duration: durations[j], ease: "power3.out" }) : null
+        );
+        qY.current[i] = els.map((el, j) =>
+          el ? gsap.quickTo(el, "y", { duration: durations[j] + 0.1, ease: "power3.out" }) : null
+        );
+        qBlur.current[i] = els.map((el, j) =>
+          el ? gsap.quickTo(el, "filter", {
+            duration: durations[j] + 0.15,
+            ease: "power2.out",
+            onUpdate: function () {
+              // Ensure filter stays valid during tween
+            }
+          }) : null
+        );
+      });
+
+      // ── Scroll-driven animation ─────────────────────────────────────────
+      const scrollTrigger = ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "+=1600%",      // Longer scroll distance = slower text transitions
+        scrub: 1.5,          // Lower scrub = more responsive but still smooth
+        pin: true,
+        anticipatePin: 1,
+        pinSpacing: true,    // CRITICAL: adds spacer for smooth next section transition
+        snap: {
+          snapTo: CENTERS,
+          duration: { min: 0.5, max: 1.5 },
+          delay: 0.05,
+          ease: "power2.inOut"
+        },
+        onUpdate(self) {
+          const p = self.progress;
+
+          // Video slow zoom (1 → 1.08) - subtler
+          gsap.set(videoWrapRef.current, { scale: 1 + 0.08 * p });
+
+          // Vignette deepens gradually
+          gsap.set(vignetteRef.current, { opacity: 0.50 + 0.40 * p });
+
+          // Update each stage
+          STAGES.forEach((_, i) => {
+            const op = calcOpacity(p, CENTERS[i]);
+            const y = calcY(p, CENTERS[i]);
+
+            // Opacity & Y via quickTo
+            qOpacity.current[i].forEach(fn => fn?.(op));
+            qY.current[i].forEach(fn => fn?.(y));
+
+            // Blur with smooth transition
+            const blurVal = op < 1 ? 14 * (1 - op) : 0;
+            [tagRefs.current[i], line1Refs.current[i], line2Refs.current[i], descRefs.current[i]]
+              .forEach(el => {
+                if (el) el.style.filter = `blur(${blurVal.toFixed(1)}px)`;
+              });
+          });
+        }
+      });
+
+      // Store reference for cleanup
+      if (sectionRef.current) {
+        (sectionRef.current as any)._st = scrollTrigger;
+      }
+
+    }, containerRef);
+
+    return () => {
+      ctx.revert();
+      lenis.destroy();
+      gsap.ticker.remove(ticker);
+    };
   }, []);
 
-  // 5. Active Scene Orchestration
-  const [activeScene, setActiveScene] = useState<Scene | null>(SCENES[0]);
-  useEffect(() => {
-    const unsubscribe = smoothProgress.on("change", (v) => {
-      let current = null;
-      for (const scene of SCENES) {
-        if (v >= scene.start - 0.05 && v <= scene.end + 0.05) {
-          current = scene;
-          break;
-        }
-      }
-      setActiveScene(current);
-    });
-    return () => unsubscribe();
-  }, [smoothProgress]);
-
   return (
-    <div ref={containerRef} className="relative h-[800vh] bg-slate-950">
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+    <div ref={containerRef}>
+      <section
+        ref={sectionRef}
+        className="relative w-full h-svh min-h-[600px] overflow-hidden bg-black font-sans"
+      >
+        {/* Video */}
+        <div ref={videoWrapRef} className="absolute inset-0 z-0 origin-center will-change-transform bg-black">
+          <video
+            ref={vid1Ref}
+            autoPlay
+            muted
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover z-0"
+          >
+            <source src="/Stone_fragments_floating_in_dark…_202605131342.mp4" type="video/mp4" />
+          </video>
+          <video
+            ref={vid2Ref}
+            muted
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover z-10 opacity-0"
+          >
+            <source src="/Stone_fragments_floating_in_dark…_202605131342.mp4" type="video/mp4" />
+          </video>
+        </div>
 
-        {/* Loading Overlay */}
-        {!isLoaded && (
-          <div className="absolute inset-0 z-[60] bg-slate-950 flex flex-col items-center justify-center text-white space-y-6">
-            <div className="relative w-64 h-1.5 bg-white/5 rounded-full overflow-hidden">
-              <motion.div 
-                className="absolute inset-y-0 left-0 bg-primary"
-                initial={{ width: 0 }}
-                animate={{ width: `${loadingProgress}%` }}
-                transition={{ type: "spring", stiffness: 50, damping: 15 }}
-              />
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <p className="text-[10px] font-black tracking-[0.3em] uppercase text-primary animate-pulse">
-                Calibrating Digital OT
-              </p>
-              <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest leading-none">
-                Hardware Decryption · {loadingProgress}%
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Dynamic Canvas Background */}
-        <div className="absolute inset-0 z-0 bg-slate-950">
-          <canvas
-            ref={canvasRef}
-            className={`w-full h-full object-cover transition-opacity duration-1000 ${isLoaded ? 'opacity-70' : 'opacity-0'}`}
+        {/* Overlays */}
+        <div className="absolute inset-0 z-10 pointer-events-none">
+          <div
+            ref={vignetteRef}
+            className="absolute inset-0 bg-[radial-gradient(ellipse_90%_90%_at_50%_50%,transparent_15%,rgba(0,0,0,0.88)_85%)]"
+            style={{ opacity: 0.5 }}
           />
-          {/* Pro Vignette for Text Contrast */}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-transparent to-slate-950 pointer-events-none opacity-80" />
-          <div className="absolute inset-0 bg-radial-gradient from-transparent to-slate-950/60 pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/80 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
         </div>
 
-        {/* Animated Text Scenes */}
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6 pointer-events-none">
-          <AnimatePresence mode="wait">
-            {activeScene && (
-              <motion.div
-                key={activeScene.id}
-                initial={{ opacity: 0, y: 40, filter: "blur(20px)", scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
-                exit={{ opacity: 0, y: -40, filter: "blur(20px)", scale: 0.9 }}
-                transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }} 
-                className="max-w-5xl space-y-8"
-              >
-                {activeScene.badge && (
-                  <motion.span
-                    initial={{ opacity: 0, letterSpacing: "0.5em" }}
-                    animate={{ opacity: 1, letterSpacing: "0.25em" }}
-                    transition={{ delay: 0.4, duration: 1 }}
-                    className="inline-block px-5 py-2 mb-4 text-[11px] font-black text-primary bg-primary/10 border border-primary/20 rounded-full uppercase"
+        {/* Text stages */}
+        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+          <div className="relative w-full max-w-4xl mx-auto px-6 text-center" style={{ height: "70vh" }}>
+            {STAGES.map((s, i) => (
+              <div key={i} className="absolute inset-0 flex flex-col items-center justify-center px-6">
+
+                {/* Tag */}
+                <span
+                  ref={(el) => { tagRefs.current[i] = el; }}
+                  className="inline-flex items-center gap-3 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.45em] text-white mb-5 will-change-transform"
+                >
+                  <span className="block w-6 h-px bg-white/30" />
+                  {s.tag}
+                  <span className="block w-6 h-px bg-white/30" />
+                </span>
+
+                {/* Headline */}
+                <h1 className="flex flex-col items-center leading-[0.85]">
+                  <span
+                    ref={(el) => { line1Refs.current[i] = el; }}
+                    className="block font-black text-white uppercase tracking-[-0.055em] will-change-transform whitespace-nowrap"
+                    style={{
+                      fontSize: "clamp(2.5rem, 8vw, 8rem)",
+                      textShadow: "0 4px 60px rgba(0,0,0,0.8), 0 0 120px rgba(255,255,255,0.04)",
+                    }}
                   >
-                    {activeScene.badge}
-                  </motion.span>
-                )}
-                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-white leading-[0.95] tracking-tight [text-wrap:balance]">
-                  {activeScene.title}
+                    {s.line1}
+                  </span>
+                  <span
+                    ref={(el) => { line2Refs.current[i] = el; }}
+                    className="block font-extralight italic text-white lowercase tracking-wide will-change-transform whitespace-nowrap"
+                    style={{
+                      fontSize: "clamp(1.4rem, 4.5vw, 4rem)",
+                      marginTop: "-0.04em",
+                      textShadow: "0 2px 30px rgba(0,0,0,0.7)",
+                    }}
+                  >
+                    {s.line2}
+                  </span>
                 </h1>
-                <p className="text-base sm:text-xl md:text-2xl text-white/50 font-medium max-w-2xl mx-auto leading-relaxed">
-                  {activeScene.subtitle}
+
+                {/* Description */}
+                <p
+                  ref={(el) => { descRefs.current[i] = el; }}
+                  className="mt-7 text-white font-light leading-relaxed max-w-lg mx-auto will-change-transform"
+                  style={{ fontSize: "clamp(0.82rem, 1.5vw, 1rem)" }}
+                >
+                  {s.desc}
                 </p>
-
-                {activeScene.id === 4 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8 }}
-                    className="pt-10 pointer-events-auto"
-                  >
-                    <button
-                      onClick={() => {
-                        const element = document.getElementById('appointment-section');
-                        if (element) {
-                          element.scrollIntoView({ behavior: 'smooth' });
-                        } else {
-                          window.location.href = '/book';
-                        }
-                      }}
-                      className="group relative px-12 py-6 bg-primary text-white font-black rounded-2xl overflow-hidden shadow-2xl transition-all hover:scale-105 active:scale-95"
-                    >
-                      <span className="relative z-10">BOOK FREE CONSULTATION →</span>
-                      <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                    </button>
-                  </motion.div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Minimal Scroll Progression */}
-        <div className="absolute bottom-12 left-12 right-12 flex justify-between items-end">
-          <div className="hidden md:block">
-            <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mb-2">Clinical Protocol</p>
-            <div className="flex gap-2">
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} className={`h-1 w-8 rounded-full transition-all duration-700 ${activeScene?.id === i + 1 ? 'bg-primary w-12' : 'bg-white/10'}`} />
-              ))}
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center gap-4">
-            <motion.div
-              animate={{ opacity: [0.2, 0.5, 0.2] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="text-[9px] font-black text-white/40 uppercase tracking-[0.5em] mb-2 vertical-text"
-            >
-              Discover
-            </motion.div>
-            <div className="w-[2px] h-20 bg-white/5 rounded-full relative overflow-hidden">
-              <motion.div
-                className="absolute top-0 w-full bg-primary/60 origin-top"
-                style={{ height: "100%", scaleY: smoothProgress }}
-              />
-            </div>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
 
-      <style jsx>{`
-        .vertical-text {
-          writing-mode: vertical-rl;
-          text-orientation: mixed;
-        }
-      `}</style>
+        <div
+          ref={buttonsRef}
+          className="absolute bottom-16 sm:bottom-20 left-0 right-0 z-30 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-6"
+        >
+          <button 
+            onClick={() => {
+              document.getElementById('appointment-section')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="group w-full sm:w-auto px-8 py-4 bg-white text-black text-[11px] font-bold uppercase tracking-widest rounded-full shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:bg-white/90 transition-all duration-300 active:scale-95"
+          >
+            Book Appointment
+            <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform duration-200">→</span>
+          </button>
+        </div>
+
+        {/* Scroll hint */}
+        <div
+          ref={scrollHintRef}
+          className="absolute bottom-4 left-0 right-0 z-30 flex flex-col items-center gap-1.5 pointer-events-none"
+        >
+          <span className="text-[8px] uppercase tracking-[0.55em] text-white">Scroll</span>
+          <div className="w-px h-8 bg-gradient-to-b from-white/35 to-transparent" />
+        </div>
+      </section>
+
+      {/* Spacer for smooth transition to next section */}
+      <div ref={spacerRef} className="h-[10vh] bg-black" />
     </div>
   );
 }

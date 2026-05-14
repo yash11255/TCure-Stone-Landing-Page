@@ -78,9 +78,9 @@ export default function Navbar() {
           {/* Right Section: Socials + Phone + Book Button */}
           <div className="hidden md:flex items-center gap-5">
             <div className="flex items-center gap-3 pr-4 border-r border-slate-200">
-              <a href="https://www.youtube.com/@cure_stone" target="_blank" className="text-slate-400 hover:text-[#FF0000] transition-colors"><SocialIcons.Youtube /></a>
-              <a href="#" className="text-slate-400 hover:text-primary transition-colors"><SocialIcons.Instagram /></a>
-              <a href="#" className="text-slate-400 hover:text-primary transition-colors"><SocialIcons.Facebook /></a>
+              <a href="https://www.youtube.com/@cure_stone" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-[#FF0000] transition-colors"><SocialIcons.Youtube /></a>
+              <a href="https://www.instagram.com/the_cure_stone/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-primary transition-colors"><SocialIcons.Instagram /></a>
+              <a href="https://www.facebook.com/curestone/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-primary transition-colors"><SocialIcons.Facebook /></a>
             </div>
 
             <a href="tel:+918800263884" className="text-sm font-black text-slate-700 hover:text-primary whitespace-nowrap">+91 88002 63884</a>
@@ -88,7 +88,7 @@ export default function Navbar() {
             <Link href="/book" className="group relative px-7 py-2.5 bg-primary text-white font-black text-xs rounded-full uppercase tracking-widest shadow-lg shadow-primary/30">
               {/* Thick Outer Highlight Border */}
               <div className="absolute inset-[-3px] rounded-full border-2 border-primary group-hover:border-primary-dark transition-colors" />
-              <span className="relative">BOOK NOW</span>
+              <span className="relative">BOOK YOUR APPOINTMENT</span>
             </Link>
           </div>
 
@@ -120,8 +120,8 @@ export default function Navbar() {
                 href={link.href}
                 onClick={() => setIsOpen(false)}
                 className={`block w-full p-4 rounded-xl text-lg font-black transition-all ${link.highlight
-                    ? "bg-primary text-white border-b-4 border-primary-dark shadow-xl"
-                    : "text-slate-800 hover:bg-slate-50 border border-transparent"
+                  ? "bg-primary text-white border-b-4 border-primary-dark shadow-xl"
+                  : "text-slate-800 hover:bg-slate-50 border border-transparent"
                   }`}
               >
                 {link.name}
@@ -137,8 +137,9 @@ export default function Navbar() {
                 <a href="tel:+918800263884" className="text-xl font-black">+91 88002 63884</a>
               </div>
               <div className="flex gap-3">
-                <a href="https://www.youtube.com/@cure_stone" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-[#FF0000]"><SocialIcons.Youtube /></a>
-                <a href="#" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-primary"><SocialIcons.Instagram /></a>
+                <a href="https://www.youtube.com/@cure_stone" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-[#FF0000]"><SocialIcons.Youtube /></a>
+                <a href="https://www.instagram.com/the_cure_stone/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-primary"><SocialIcons.Instagram /></a>
+                <a href="https://www.facebook.com/curestone/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-primary"><SocialIcons.Facebook /></a>
               </div>
             </div>
 

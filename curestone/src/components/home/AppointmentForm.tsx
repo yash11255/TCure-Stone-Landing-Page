@@ -22,7 +22,7 @@ const STONE_SIZES = [
   "Unknown / Not Diagnosed"
 ];
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznh1P-N_hf16qop9l3squGsuPrf4nj03pVuWeYawZsdB8DBC1Oct-1SNX6KAZBHyVy8w/exec";
+const SCRIPT_URL = process.env.NEXT_PUBLIC_APPOINTMENT_FORM_SHEET_URL || "https://script.google.com/macros/s/AKfycbznh1P-N_hf16qop9l3squGsuPrf4nj03pVuWeYawZsdB8DBC1Oct-1SNX6KAZBHyVy8w/exec";
 
 export default function AppointmentForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -37,6 +37,7 @@ export default function AppointmentForm() {
     
     // Create the payload for Google Sheets
     const data = {
+      source: "Main Website Form",
       name: formData.get("fullName"),
       phone: formData.get("phone"),
       state: formData.get("state"),

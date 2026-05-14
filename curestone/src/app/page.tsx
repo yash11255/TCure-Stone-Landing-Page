@@ -8,10 +8,28 @@ import GoogleReviews from "@/components/home/GoogleReviews";
 import GlobalReach from "@/components/home/GlobalReach";
 import Services from "@/components/home/Services";
 import WhyRIRS from "@/components/home/WhyRIRS";
+import PhysioSection from "@/components/home/PhysioSection";
+import AestheticSection from "@/components/home/AestheticSection";
 import TreatmentTracker from "@/components/home/TreatmentTracker";
-import PatientStories from "@/components/home/PatientStories";
 import AppointmentForm from "@/components/home/AppointmentForm";
 import Footer from "@/components/layout/Footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Best Kidney Stone Laser Surgery in Gurgaon & Delhi NCR",
+  description:
+    "CureStone specialises in advanced RIRS laser kidney stone surgery. Painless, stitch-free procedures with 98% success rate in Gurgaon & Delhi NCR. Cashless insurance accepted. Book your free consultation today.",
+  alternates: {
+    canonical: "https://curestone.in",
+  },
+  openGraph: {
+    title: "CureStone | Best Kidney Stone Laser Surgery in Gurgaon & Delhi NCR",
+    description:
+      "Advanced RIRS laser surgery — no cuts, no scars, 98% success rate. Serving Gurgaon, Delhi, and all of India.",
+    url: "https://curestone.in",
+    images: [{ url: "/og-image.svg", width: 1200, height: 630 }],
+  },
+};
 
 export default function Home() {
   return (

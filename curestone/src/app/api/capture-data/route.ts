@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const GOOGLE_SHEET_WEBHOOK_URL = process.env.GOOGLE_SHEET_WEBHOOK_URL;
+const GOOGLE_SHEET_WEBHOOK_URL = process.env.NEXT_PUBLIC_APPOINTMENT_FORM_SHEET_URL;
 
 export async function POST(req: NextRequest) {
   try {

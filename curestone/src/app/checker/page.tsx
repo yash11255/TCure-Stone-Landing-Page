@@ -60,6 +60,35 @@ function renderMarkdown(text: string) {
       );
     } else if (line.trim() === "") {
       elements.push(<div key={idx} className="h-2" />);
+    } else if (line.trim() === "[MAP_EMBED]") {
+      elements.push(
+        <div key={idx} className="my-3 w-full rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+          <iframe 
+            width="100%" 
+            height="250" 
+            frameBorder="0" 
+            scrolling="no" 
+            src="https://maps.google.com/maps?width=100%25&height=250&hl=en&q=Cure%20Stone%20Hospital,%20Sector%2052,%20Gurugram+(Cure%20Stone%20Hospital)&t=&z=15&ie=UTF8&iwloc=B&output=embed"
+          />
+        </div>
+      );
+    } else if (line.trim().startsWith("[YOUTUBE_EMBED:")) {
+      const match = line.trim().match(/\[YOUTUBE_EMBED:(.+)\]/);
+      if (match && match[1]) {
+        elements.push(
+          <div key={idx} className="my-3 w-full rounded-2xl overflow-hidden shadow-sm bg-black border border-slate-200">
+            <iframe
+              width="100%"
+              height="200"
+              src={`https://www.youtube.com/embed/${match[1]}?autoplay=0`}
+              title="Cure Stone Hospital Video"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
+        );
+      }
     } else {
       elements.push(
         <p key={idx} className="my-0.5 text-slate-700 leading-relaxed">

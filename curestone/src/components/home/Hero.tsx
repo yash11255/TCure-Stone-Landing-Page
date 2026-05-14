@@ -67,8 +67,8 @@ export default function Hero() {
   const buttonsRef = useRef<HTMLDivElement>(null);
   const scrollHintRef = useRef<HTMLDivElement>(null);
   const spacerRef = useRef<HTMLDivElement>(null);
-  
-  
+
+
 
   // Per-stage element refs
   const tagRefs = useRef<(HTMLSpanElement | null)[]>([null, null, null, null]);
@@ -81,7 +81,7 @@ export default function Hero() {
   const qY = useRef<(((v: number) => void) | null)[][]>([[], [], [], []]);
   const qBlur = useRef<(((v: number) => void) | null)[][]>([[], [], [], []]);
 
-  
+
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -113,7 +113,7 @@ export default function Hero() {
     if (vid) {
       vid.defaultMuted = true;
       vid.muted = true;
-      vid.play().catch(() => {});
+      vid.play().catch(() => { });
     }
 
     const ctx = gsap.context(() => {
@@ -214,7 +214,8 @@ export default function Hero() {
 
   return (
     <div ref={containerRef}>
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         video::-webkit-media-controls-start-playback-button {
           display: none !important;
           -webkit-appearance: none !important;
@@ -228,8 +229,8 @@ export default function Hero() {
         className="relative w-full h-svh min-h-[600px] overflow-hidden bg-black font-sans"
       >
         {/* Video */}
-        <div 
-          ref={videoWrapRef} 
+        <div
+          ref={videoWrapRef}
           className="absolute inset-0 z-0 origin-center will-change-transform bg-black pointer-events-none"
           dangerouslySetInnerHTML={{
             __html: `
@@ -316,7 +317,7 @@ export default function Hero() {
           ref={buttonsRef}
           className="absolute bottom-16 sm:bottom-20 left-0 right-0 z-30 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-6"
         >
-          <button 
+          <button
             onClick={() => {
               document.getElementById('appointment-section')?.scrollIntoView({ behavior: 'smooth' });
             }}

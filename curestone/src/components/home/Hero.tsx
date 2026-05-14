@@ -331,10 +331,6 @@ export default function Hero() {
           <span className="text-[8px] uppercase tracking-[0.55em] text-white">Scroll</span>
           <div className="w-px h-8 bg-gradient-to-b from-white/35 to-transparent" />
         </div>
-      </section>
-
-      {/* Spacer for smooth transition to next section */}
-      <div ref={spacerRef} className="h-[20vh] bg-gradient-to-b from-black to-blue-900 pointer-events-none" />
     </div>
   );
 }

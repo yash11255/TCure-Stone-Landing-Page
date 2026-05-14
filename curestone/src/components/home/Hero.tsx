@@ -67,8 +67,8 @@ export default function Hero() {
   const buttonsRef = useRef<HTMLDivElement>(null);
   const scrollHintRef = useRef<HTMLDivElement>(null);
   const spacerRef = useRef<HTMLDivElement>(null);
-  const vid1Ref = useRef<HTMLVideoElement>(null);
-  const vid2Ref = useRef<HTMLVideoElement>(null);
+  
+  
 
   // Per-stage element refs
   const tagRefs = useRef<(HTMLSpanElement | null)[]>([null, null, null, null]);
@@ -81,44 +81,7 @@ export default function Hero() {
   const qY = useRef<(((v: number) => void) | null)[][]>([[], [], [], []]);
   const qBlur = useRef<(((v: number) => void) | null)[][]>([[], [], [], []]);
 
-  // Handle seamless video crossfade looping
-  useEffect(() => {
-    const v1 = vid1Ref.current;
-    const v2 = vid2Ref.current;
-    if (!v1 || !v2) return;
-
-    const crossfadeDuration = 1.0; // 1 second crossfade
-    
-    const handleTimeUpdate = (e: Event) => {
-      const active = e.target as HTMLVideoElement;
-      const inactive = active === v1 ? v2 : v1;
-      
-      // When nearing the end of the active video
-      if (active.duration && active.currentTime >= active.duration - crossfadeDuration) {
-        if (inactive.paused) {
-          inactive.currentTime = 0;
-          inactive.play().catch(() => {});
-          
-          gsap.to(inactive, { opacity: 1, duration: crossfadeDuration, ease: "none" });
-          gsap.to(active, { opacity: 0, duration: crossfadeDuration, ease: "none", onComplete: () => {
-            active.pause();
-          }});
-        }
-      }
-    };
-
-    v1.addEventListener('timeupdate', handleTimeUpdate);
-    v2.addEventListener('timeupdate', handleTimeUpdate);
-
-    v1.style.opacity = '1';
-    v2.style.opacity = '0';
-    v1.play().catch(() => {});
-
-    return () => {
-      v1.removeEventListener('timeupdate', handleTimeUpdate);
-      v2.removeEventListener('timeupdate', handleTimeUpdate);
-    };
-  }, []);
+  
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -146,14 +109,11 @@ export default function Hero() {
     gsap.ticker.lagSmoothing(0);
 
     // Force autoplay for iOS
-    if (vid1Ref.current) {
-      vid1Ref.current.defaultMuted = true;
-      vid1Ref.current.muted = true;
-      vid1Ref.current.play().catch(() => {});
-    }
-    if (vid2Ref.current) {
-      vid2Ref.current.defaultMuted = true;
-      vid2Ref.current.muted = true;
+    const vid = document.querySelector("video");
+    if (vid) {
+      vid.defaultMuted = true;
+      vid.muted = true;
+      vid.play().catch(() => {});
     }
 
     const ctx = gsap.context(() => {
@@ -268,27 +228,24 @@ export default function Hero() {
         className="relative w-full h-svh min-h-[600px] overflow-hidden bg-black font-sans"
       >
         {/* Video */}
-        <div ref={videoWrapRef} className="absolute inset-0 z-0 origin-center will-change-transform bg-black">
-          <video
-            ref={vid1Ref}
-            autoPlay
-            muted
-            playsInline
-            preload="auto"
-            className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
-          >
-            <source src="/Stone_fragments_floating_in_dark…_202605131342.mp4" type="video/mp4" />
-          </video>
-          <video
-            ref={vid2Ref}
-            muted
-            playsInline
-            preload="auto"
-            className="absolute inset-0 w-full h-full object-cover z-10 opacity-0 pointer-events-none"
-          >
-            <source src="/Stone_fragments_floating_in_dark…_202605131342.mp4" type="video/mp4" />
-          </video>
-        </div>
+        <div 
+          ref={videoWrapRef} 
+          className="absolute inset-0 z-0 origin-center will-change-transform bg-black pointer-events-none"
+          dangerouslySetInnerHTML={{
+            __html: `
+              <video
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="auto"
+                class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
+              >
+                <source src="/Stone_fragments_floating_in_dark…_202605131342.mp4" type="video/mp4" />
+              </video>
+            `
+          }}
+        />
 
         {/* Overlays */}
         <div className="absolute inset-0 z-10 pointer-events-none">

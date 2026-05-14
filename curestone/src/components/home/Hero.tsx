@@ -331,6 +331,7 @@ export default function Hero() {
           <span className="text-[8px] uppercase tracking-[0.55em] text-white">Scroll</span>
           <div className="w-px h-8 bg-gradient-to-b from-white/35 to-transparent" />
         </div>
+      </section>
     </div>
   );
 }

@@ -338,7 +338,7 @@ export default function Hero() {
       </section>
 
       {/* Spacer for smooth transition to next section */}
-      <div ref={spacerRef} className="h-[20vh] bg-gradient-to-b from-black to-transparent pointer-events-none" />
+      <div ref={spacerRef} className="h-[20vh] bg-gradient-to-b from-black to-blue-900 pointer-events-none" />
     </div>
   );
 }

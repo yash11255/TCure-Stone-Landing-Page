@@ -158,7 +158,7 @@ export default function Hero() {
         scrub: 2.0,          // Increased scrub for smoother, less jumpy transitions
         pin: true,
         anticipatePin: 1,
-        pinSpacing: true,    // CRITICAL: adds spacer for smooth next section transition
+        pinSpacing: false,    // CRITICAL: adds spacer for smooth next section transition
         snap: {
           snapTo: CENTERS,
           duration: { min: 0.5, max: 1.5 },

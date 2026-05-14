@@ -174,11 +174,6 @@ export default function Hero() {
           // Vignette deepens gradually
           gsap.set(vignetteRef.current, { opacity: 0.50 + 0.40 * p });
 
-          // Fade out the entire hero content gracefully as the user scrolls out of the pin
-          // The last stage is at 0.85, so we fade out from 0.85 to 1.0
-          const exitFade = p > 0.85 ? 1 - ((p - 0.85) / 0.15) : 1;
-          gsap.set(sectionRef.current, { opacity: Math.max(0, exitFade) });
-
           // Update each stage
           STAGES.forEach((_, i) => {
             const op = calcOpacity(p, CENTERS[i]);

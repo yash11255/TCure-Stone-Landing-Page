@@ -41,10 +41,10 @@ const ExpertVideos = () => {
   const [playingId, setPlayingId] = useState<string | null>(null);
 
   return (
-    <section className="py-20 bg-background-alt overflow-hidden">
+    <section className="py-20 bg-gradient-to-b from-[#eff2f8] to-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="text-center mb-16">
-          <span className="inline-block px-4 py-1.5 mb-4 text-[10px] font-black tracking-widest text-primary bg-primary/5 border border-primary/10 rounded-full uppercase">
+          <span className="inline-block px-4 py-1.5 mb-4 text-[10px] font-black tracking-widest text-[#2563ff] bg-[#2563ff]/5 border border-[#2563ff]/10 rounded-full uppercase">
             Watch & Learn
           </span>
           <h2 className="text-3xl md:text-5xl font-black tracking-tight text-foreground">
@@ -69,11 +69,11 @@ const ExpertVideos = () => {
                     className="absolute inset-0 w-full h-full border-0"
                   />
                 ) : (
-                  <div 
+                  <div
                     className={`absolute inset-0 cursor-pointer ${video.bgColor}`}
                     onClick={() => setPlayingId(video.id)}
                   >
-                    <img 
+                    <img
                       src={`https://img.youtube.com/vi/${video.ytId}/maxresdefault.jpg`}
                       alt={video.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100"
@@ -108,7 +108,7 @@ const ExpertVideos = () => {
                   <p className="text-[10px] font-bold text-text-light uppercase tracking-widest">
                     {video.meta}
                   </p>
-                  <button 
+                  <button
                     onClick={() => window.open(`https://www.youtube.com/watch?v=${video.ytId}`, '_blank')}
                     className="text-primary hover:text-primary-dark transition-colors"
                   >
@@ -123,8 +123,8 @@ const ExpertVideos = () => {
         </div>
 
         <div className="text-center mt-12">
-          <a 
-            href="https://www.youtube.com/@cure_stone" 
+          <a
+            href="https://www.youtube.com/@cure_stone"
             target="_blank"
             className="inline-flex items-center gap-3 bg-white border-2 border-border/50 text-text-mid font-black px-10 py-4 rounded-2xl hover:border-primary/30 hover:text-primary transition-all active:scale-95 no-underline"
           >

@@ -10,25 +10,25 @@ const STAGES = [
   {
     tag: "Dr. Deepanshu Gupta",
     line1: "WELCOME TO",
-    line2: "cure stone",
+    line2: "CURE STONE",
     desc: "",
   },
   {
     tag: "Precision Care",
     line1: "INDIA'S BEST",
-    line2: "kidney stone treatment",
+    line2: "KIDNEY STONE TREATMENT",
     desc: "1st Ever to start Fans-RIRS in North India — By Dr. Deepanshu Gupta.",
   },
   {
     tag: "98% Success",
     line1: "UNMATCHED",
-    line2: "success rate",
+    line2: "SUCCESS RATE",
     desc: "Maintaining a 98% stone-free success rate over 30,000+ patient lives.",
   },
   {
     tag: "Book Free Consultation",
     line1: "TAKE CONTROL",
-    line2: "of your health",
+    line2: "OF YOUR HEALTH",
     desc: "Consult India's leading kidney specialist today at Cure Stone.",
   },
 ];
@@ -55,10 +55,17 @@ function calcY(p: number, center: number): number {
   return dir * 36 * (t * t);
 }
 
+const VIDEO_SRC = "/Stone_fragments_floating_in_dark…_202605131342.mp4";
+// Crossfade duration in seconds — how long the two videos overlap
+const XFADE_DURATION = 1.2;
+
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Two video elements for seamless crossfade loop
+  const videoA = useRef<HTMLVideoElement>(null);
+  const videoB = useRef<HTMLVideoElement>(null);
   const videoWrapRef = useRef<HTMLDivElement>(null);
   const vignetteRef = useRef<HTMLDivElement>(null);
 
@@ -71,46 +78,100 @@ export default function Hero() {
   const qY = useRef<(((v: number) => void) | null)[][]>([[], [], [], []]);
 
   useEffect(() => {
-    // Reset scroll position on mount
     window.history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
 
-    // ── iOS/Android video autoplay ──────────────────────────────────────
-    const vid = videoRef.current;
-    if (vid) {
-      vid.defaultMuted = true;
-      vid.muted = true;
-      vid.setAttribute("muted", "");
-      vid.setAttribute("playsinline", "");
-      vid.setAttribute("autoplay", "");
+    // ── Crossfade video loop setup ─────────────────────────────────────
+    const a = videoA.current!;
+    const b = videoB.current!;
 
-      const tryPlay = () => {
-        const p = vid.play();
-        if (p !== undefined) {
-          p.catch(() => {
-            // Retry on first user interaction (needed for some Android)
-            const retry = () => {
-              vid.play().catch(() => { });
-              document.removeEventListener("touchstart", retry);
-              document.removeEventListener("click", retry);
-            };
-            document.addEventListener("touchstart", retry, { once: true });
-            document.addEventListener("click", retry, { once: true });
-          });
-        }
-      };
+    [a, b].forEach((v) => {
+      v.defaultMuted = true;
+      v.muted = true;
+      v.setAttribute("muted", "");
+      v.setAttribute("playsinline", "");
+    });
 
-      if (vid.readyState >= 2) {
-        tryPlay();
-      } else {
-        vid.addEventListener("canplay", tryPlay, { once: true });
+    let active = a;
+    let standby = b;
+    let xfading = false;
+
+    // Preload standby, then kick off active
+    const startPlayback = () => {
+      // Start active immediately
+      active.currentTime = 0;
+      const p = active.play();
+      if (p) p.catch(() => { });
+
+      // Standby: load quietly
+      standby.currentTime = 0;
+      standby.style.opacity = "0";
+    };
+
+    const doXfade = () => {
+      if (xfading) return;
+      xfading = true;
+
+      // Prepare standby from start
+      standby.currentTime = 0;
+      const sp = standby.play();
+      if (sp) sp.catch(() => { });
+      standby.style.opacity = "0";
+
+      // Crossfade using GSAP
+      gsap.to(standby, {
+        opacity: 1,
+        duration: XFADE_DURATION,
+        ease: "none",
+        onComplete: () => {
+          // Pause & reset old active
+          active.pause();
+          active.currentTime = 0;
+          active.style.opacity = "1"; // reset for next time
+
+          // Swap roles
+          [active, standby] = [standby, active];
+          xfading = false;
+        },
+      });
+      gsap.to(active, {
+        opacity: 0,
+        duration: XFADE_DURATION,
+        ease: "none",
+      });
+    };
+
+    // When active approaches end, start crossfade
+    const onTimeUpdate = () => {
+      if (!active.duration || xfading) return;
+      const remaining = active.duration - active.currentTime;
+      if (remaining <= XFADE_DURATION + 0.1) {
+        doXfade();
       }
-    }
+    };
 
-    // ── Lenis smooth scroll ─────────────────────────────────────────────
-    // Detect iOS for touch multiplier tuning
+    a.addEventListener("timeupdate", onTimeUpdate);
+    b.addEventListener("timeupdate", onTimeUpdate);
+
+    // iOS/Android first-play retry
+    const tryStart = () => {
+      if (a.readyState >= 2) {
+        startPlayback();
+      } else {
+        a.addEventListener("canplay", startPlayback, { once: true });
+      }
+    };
+    tryStart();
+
+    const retryOnTouch = () => {
+      a.play().catch(() => { });
+      b.play().catch(() => { });
+    };
+    document.addEventListener("touchstart", retryOnTouch, { once: true });
+    document.addEventListener("click", retryOnTouch, { once: true });
+
+    // ── Lenis ─────────────────────────────────────────────────────────
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-
     const lenis = new Lenis({
       duration: isIOS ? 1.2 : 1.6,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -122,13 +183,11 @@ export default function Hero() {
     });
 
     lenis.on("scroll", ScrollTrigger.update);
-
     const ticker = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(ticker);
     gsap.ticker.lagSmoothing(0);
 
     const ctx = gsap.context(() => {
-      // ── Initial state ─────────────────────────────────────────────────
       STAGES.forEach((_, i) => {
         const els = [
           tagRefs.current[i],
@@ -143,7 +202,6 @@ export default function Hero() {
         });
       });
 
-      // ── QuickTo tweeners ─────────────────────────────────────────────
       const durations = [0.12, 0.18, 0.24, 0.30];
       STAGES.forEach((_, i) => {
         const els = [
@@ -160,7 +218,6 @@ export default function Hero() {
         );
       });
 
-      // ── Scroll trigger ────────────────────────────────────────────────
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: "top top",
@@ -178,17 +235,13 @@ export default function Hero() {
         onUpdate(self) {
           const p = self.progress;
 
-          // Subtle video zoom
           if (videoWrapRef.current) {
             gsap.set(videoWrapRef.current, { scale: 1 + 0.06 * p });
           }
-
-          // Vignette intensity
           if (vignetteRef.current) {
             gsap.set(vignetteRef.current, { opacity: 0.48 + 0.38 * p });
           }
 
-          // Animate each stage
           STAGES.forEach((_, i) => {
             const op = calcOpacity(p, CENTERS[i]);
             const y = calcY(p, CENTERS[i]);
@@ -215,12 +268,26 @@ export default function Hero() {
       ctx.revert();
       lenis.destroy();
       gsap.ticker.remove(ticker);
+      a.removeEventListener("timeupdate", onTimeUpdate);
+      b.removeEventListener("timeupdate", onTimeUpdate);
+      document.removeEventListener("touchstart", retryOnTouch);
+      document.removeEventListener("click", retryOnTouch);
     };
   }, []);
 
+  const videoStyle: React.CSSProperties = {
+    position: "absolute",
+    inset: 0,
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
+    pointerEvents: "none",
+    outline: "none",
+  };
+
   return (
     <>
-      {/* Global resets: no white gaps anywhere */}
       <style>{`
         html, body {
           margin: 0;
@@ -228,7 +295,6 @@ export default function Hero() {
           overflow-x: hidden;
           background: #000;
         }
-        /* Kill iOS video controls overlay */
         video::-webkit-media-controls,
         video::-webkit-media-controls-panel,
         video::-webkit-media-controls-start-playback-button,
@@ -243,16 +309,11 @@ export default function Hero() {
           -webkit-appearance: none !important;
           opacity: 0 !important;
         }
-        /* Remove tap highlight on mobile */
         * { -webkit-tap-highlight-color: transparent; }
-        /* Prevent pull-to-refresh from breaking pin */
         body { overscroll-behavior-y: none; }
       `}</style>
 
-      <div
-        ref={containerRef}
-        style={{ margin: 0, padding: 0, background: "#000" }}
-      >
+      <div ref={containerRef} style={{ margin: 0, padding: 0, background: "#000" }}>
         <section
           ref={sectionRef}
           style={{
@@ -266,7 +327,7 @@ export default function Hero() {
             padding: 0,
           }}
         >
-          {/* ── Video ─────────────────────────────────────────────── */}
+          {/* ── Dual-video crossfade layer ────────────────────────── */}
           <div
             ref={videoWrapRef}
             style={{
@@ -279,51 +340,35 @@ export default function Hero() {
               pointerEvents: "none",
             }}
           >
-            {/*
-              CRITICAL for iOS autoplay:
-              - `muted` attribute must be present as HTML attr, not just JS prop
-              - `playsInline` / `playsInline` (React camelCase)
-              - `autoPlay` (React camelCase)
-              - No controls
-            */}
+            {/* Video A — starts as active (opacity 1) */}
             <video
-              ref={videoRef}
+              ref={videoA}
               muted
-              loop
-              autoPlay
               playsInline
               preload="auto"
               disablePictureInPicture
               disableRemotePlayback
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                display: "block",
-                pointerEvents: "none",
-                // Needed on some Android to hide controls
-                outline: "none",
-              }}
+              style={{ ...videoStyle, opacity: 1 }}
             >
-              <source
-                src="/Stone_fragments_floating_in_dark…_202605131342.mp4"
-                type="video/mp4"
-              />
+              <source src={VIDEO_SRC} type="video/mp4" />
+            </video>
+
+            {/* Video B — standby (opacity 0), cross-fades in */}
+            <video
+              ref={videoB}
+              muted
+              playsInline
+              preload="auto"
+              disablePictureInPicture
+              disableRemotePlayback
+              style={{ ...videoStyle, opacity: 0 }}
+            >
+              <source src={VIDEO_SRC} type="video/mp4" />
             </video>
           </div>
 
           {/* ── Overlays ─────────────────────────────────────────── */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              zIndex: 10,
-              pointerEvents: "none",
-            }}
-          >
-            {/* Radial vignette */}
+          <div style={{ position: "absolute", inset: 0, zIndex: 10, pointerEvents: "none" }}>
             <div
               ref={vignetteRef}
               style={{
@@ -334,7 +379,6 @@ export default function Hero() {
                 opacity: 0.48,
               }}
             />
-            {/* Top fade */}
             <div
               style={{
                 position: "absolute",
@@ -343,7 +387,6 @@ export default function Hero() {
                 background: "linear-gradient(to bottom, rgba(0,0,0,0.75), transparent)",
               }}
             />
-            {/* Bottom fade */}
             <div
               style={{
                 position: "absolute",
@@ -399,8 +442,8 @@ export default function Hero() {
                       alignItems: "center",
                       gap: 12,
                       fontSize: "clamp(9px, 2vw, 11px)",
-                      fontWeight: 600,
-                      letterSpacing: "0.42em",
+                      fontWeight: 900,
+                      letterSpacing: "0.28em",
                       textTransform: "uppercase",
                       color: "#fff",
                       marginBottom: 20,
@@ -412,16 +455,17 @@ export default function Hero() {
                     <span style={{ display: "block", width: 24, height: 1, background: "rgba(255,255,255,0.3)" }} />
                   </span>
 
-                  {/* Headline */}
+                  {/* Headline — all bold, no italic */}
                   <h1 style={{ margin: 0, padding: 0, display: "flex", flexDirection: "column", alignItems: "center", lineHeight: 0.85 }}>
                     <span
                       ref={(el) => { line1Refs.current[i] = el; }}
                       style={{
                         display: "block",
                         fontWeight: 900,
+                        fontStyle: "normal",
                         color: "#fff",
                         textTransform: "uppercase",
-                        letterSpacing: "-0.055em",
+                        letterSpacing: "0.04em",
                         fontSize: "clamp(2.4rem, 8vw, 7.5rem)",
                         textShadow: "0 4px 60px rgba(0,0,0,0.8)",
                         willChange: "transform, opacity",
@@ -434,13 +478,13 @@ export default function Hero() {
                       ref={(el) => { line2Refs.current[i] = el; }}
                       style={{
                         display: "block",
-                        fontWeight: 200,
-                        fontStyle: "italic",
+                        fontWeight: 900,
+                        fontStyle: "normal",
                         color: "#fff",
-                        textTransform: "lowercase",
-                        letterSpacing: "0.02em",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.04em",
                         fontSize: "clamp(1.3rem, 4.2vw, 3.8rem)",
-                        marginTop: "-0.04em",
+                        marginTop: "0.08em",
                         textShadow: "0 2px 30px rgba(0,0,0,0.7)",
                         willChange: "transform, opacity",
                         whiteSpace: "nowrap",
@@ -458,7 +502,8 @@ export default function Hero() {
                         marginTop: 28,
                         marginBottom: 0,
                         color: "rgba(255,255,255,0.82)",
-                        fontWeight: 300,
+                        fontWeight: 700,
+                        fontStyle: "normal",
                         lineHeight: 1.65,
                         maxWidth: 480,
                         fontSize: "clamp(0.8rem, 1.5vw, 0.98rem)",
@@ -468,7 +513,6 @@ export default function Hero() {
                       {s.desc}
                     </p>
                   )}
-                  {/* Empty ref placeholder for stages without desc */}
                   {!s.desc && (
                     <p
                       ref={(el) => { descRefs.current[i] = el; }}
@@ -506,7 +550,7 @@ export default function Hero() {
                 border: "none",
                 borderRadius: 999,
                 fontSize: 11,
-                fontWeight: 700,
+                fontWeight: 900,
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
                 cursor: "pointer",
@@ -546,6 +590,7 @@ export default function Hero() {
                 letterSpacing: "0.5em",
                 textTransform: "uppercase",
                 color: "rgba(255,255,255,0.55)",
+                fontWeight: 900,
               }}
             >
               Scroll

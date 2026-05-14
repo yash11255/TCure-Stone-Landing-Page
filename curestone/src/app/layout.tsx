@@ -120,7 +120,7 @@ const organizationSchema = {
   },
   image: `${SITE_URL}/og-image.svg`,
   telephone: "+91-88002-63884",
-  email: "info@thecurestone.com",
+  email: "care@thecurestone.com",
   priceRange: "₹₹",
   currenciesAccepted: "INR",
   paymentAccepted: "Cash, Credit Card, Insurance, EMI",

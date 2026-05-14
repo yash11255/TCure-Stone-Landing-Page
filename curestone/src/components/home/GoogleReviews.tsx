@@ -38,7 +38,7 @@ const STATIC_FALLBACKS: Review[] = [
 export default function GoogleReviews() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [stats, setStats] = useState({ rating: 5.0, total: 586 });
+  const [stats, setStats] = useState({ rating: 5.0, total: "1200+" });
   const [loading, setLoading] = useState(true);
 
   // PLACE ID for Cure Stone Hospital (Sector 51, Gurgaon)

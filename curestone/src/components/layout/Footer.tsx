@@ -81,8 +81,8 @@ const Footer = () => {
               <a href="tel:+918800263884" className="flex items-center gap-3 text-white/70 no-underline">
                 <span className="opacity-50">📞</span> +91 88002 63884
               </a>
-              <a href="mailto:info@thecurestone.com" className="flex items-center gap-3 text-white/70 no-underline">
-                <span className="opacity-50">✉</span> info@thecurestone.com
+              <a href="mailto:care@thecurestone.com" className="flex items-center gap-3 text-white/70 no-underline">
+                <span className="opacity-50">✉</span> care@thecurestone.com
               </a>
             </div>
             <div className="flex gap-3 pt-2">
@@ -153,8 +153,8 @@ const Footer = () => {
           <div className="space-y-6">
             <div>
               <h4 className="text-primary text-sm font-bold uppercase tracking-widest mb-2">Visit Our Hospital</h4>
-              <p className="text-xl font-medium text-white/90">Sector 46, Gurugram, Haryana</p>
-              <p className="text-white/50 text-sm mt-1">CureStone Private Limited, 122003</p>
+              <p className="text-xl font-medium text-white/90">number 164 P &165 P, Sector 52, Near Plot, 3, Rd No D-13 A, Ardee City, Gurugram, Haryana 122003</p>
+              <p className="text-white/50 text-sm mt-1">Sector 52, Near Plot, 3, Rd No D-13 A, Ardee City, Gurugram, Haryana 122003</p>
             </div>
             <div className="flex flex-wrap gap-8">
               <div>

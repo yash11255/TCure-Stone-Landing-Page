@@ -58,7 +58,6 @@ function calcY(p: number, center: number): number {
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const videoWrapRef = useRef<HTMLDivElement>(null);
   const vignetteRef = useRef<HTMLDivElement>(null);
 
@@ -75,40 +74,7 @@ export default function Hero() {
     window.history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
 
-    // ── iOS/Android video autoplay ──────────────────────────────────────
-    const vid = videoRef.current;
-    if (vid) {
-      vid.defaultMuted = true;
-      vid.muted = true;
-      vid.setAttribute("muted", "");
-      vid.setAttribute("playsinline", "");
-      vid.setAttribute("autoplay", "");
-
-      const tryPlay = () => {
-        const p = vid.play();
-        if (p !== undefined) {
-          p.catch(() => {
-            // Retry on first user interaction (needed for some Android)
-            const retry = () => {
-              vid.play().catch(() => { });
-              document.removeEventListener("touchstart", retry);
-              document.removeEventListener("click", retry);
-            };
-            document.addEventListener("touchstart", retry, { once: true });
-            document.addEventListener("click", retry, { once: true });
-          });
-        }
-      };
-
-      if (vid.readyState >= 2) {
-        tryPlay();
-      } else {
-        vid.addEventListener("canplay", tryPlay, { once: true });
-      }
-    }
-
     // ── Lenis smooth scroll ─────────────────────────────────────────────
-    // Detect iOS for touch multiplier tuning
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
     const lenis = new Lenis({
@@ -267,6 +233,14 @@ export default function Hero() {
           }}
         >
           {/* ── Video ─────────────────────────────────────────────── */}
+          {/*
+            dangerouslySetInnerHTML is intentional here.
+            iOS Safari REQUIRES muted + autoplay + playsinline to be present
+            as raw HTML attributes at parse time. React's JSX `autoPlay` prop
+            sometimes serialises incorrectly or fires after hydration, which
+            breaks iOS autoplay. Raw HTML injected before JS runs is the only
+            reliable fix across all iOS/Android browsers.
+          */}
           <div
             ref={videoWrapRef}
             style={{
@@ -278,41 +252,18 @@ export default function Hero() {
               background: "#000",
               pointerEvents: "none",
             }}
-          >
-            {/*
-              CRITICAL for iOS autoplay:
-              - `muted` attribute must be present as HTML attr, not just JS prop
-              - `playsInline` / `playsInline` (React camelCase)
-              - `autoPlay` (React camelCase)
-              - No controls
-            */}
-            <video
-              ref={videoRef}
-              muted
-              loop
-              autoPlay
-              playsInline
-              preload="auto"
-              disablePictureInPicture
-              disableRemotePlayback
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                display: "block",
-                pointerEvents: "none",
-                // Needed on some Android to hide controls
-                outline: "none",
-              }}
-            >
-              <source
-                src="/Stone_fragments_floating_in_dark…_202605131342.mp4"
-                type="video/mp4"
-              />
-            </video>
-          </div>
+            dangerouslySetInnerHTML={{
+              __html: `<video
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="auto"
+                disablepictureinpicture
+                style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;"
+              ><source src="/Stone_fragments_floating_in_dark…_202605131342.mp4" type="video/mp4"></video>`
+            }}
+          />
 
           {/* ── Overlays ─────────────────────────────────────────── */}
           <div

@@ -147,7 +147,13 @@ export default function Hero() {
 
     // Force autoplay for iOS
     if (vid1Ref.current) {
+      vid1Ref.current.defaultMuted = true;
+      vid1Ref.current.muted = true;
       vid1Ref.current.play().catch(() => {});
+    }
+    if (vid2Ref.current) {
+      vid2Ref.current.defaultMuted = true;
+      vid2Ref.current.muted = true;
     }
 
     const ctx = gsap.context(() => {
@@ -248,6 +254,15 @@ export default function Hero() {
 
   return (
     <div ref={containerRef}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        video::-webkit-media-controls-start-playback-button {
+          display: none !important;
+          -webkit-appearance: none !important;
+        }
+        video::-webkit-media-controls {
+          display: none !important;
+        }
+      `}} />
       <section
         ref={sectionRef}
         className="relative w-full h-svh min-h-[600px] overflow-hidden bg-black font-sans"

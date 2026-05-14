@@ -145,6 +145,11 @@ export default function Hero() {
     gsap.ticker.add(ticker);
     gsap.ticker.lagSmoothing(0);
 
+    // Force autoplay for iOS
+    if (vid1Ref.current) {
+      vid1Ref.current.play().catch(() => {});
+    }
+
     const ctx = gsap.context(() => {
       // ── Set initial state ────────────────────────────────────────────────
       STAGES.forEach((_, i) => {
@@ -203,6 +208,11 @@ export default function Hero() {
           // Vignette deepens gradually
           gsap.set(vignetteRef.current, { opacity: 0.50 + 0.40 * p });
 
+          // Fade out the entire hero content gracefully as the user scrolls out of the pin
+          // The last stage is at 0.85, so we fade out from 0.85 to 1.0
+          const exitFade = p > 0.85 ? 1 - ((p - 0.85) / 0.15) : 1;
+          gsap.set(sectionRef.current, { opacity: Math.max(0, exitFade) });
+
           // Update each stage
           STAGES.forEach((_, i) => {
             const op = calcOpacity(p, CENTERS[i]);
@@ -250,7 +260,7 @@ export default function Hero() {
             muted
             playsInline
             preload="auto"
-            className="absolute inset-0 w-full h-full object-cover z-0"
+            className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
           >
             <source src="/Stone_fragments_floating_in_dark…_202605131342.mp4" type="video/mp4" />
           </video>
@@ -259,7 +269,7 @@ export default function Hero() {
             muted
             playsInline
             preload="auto"
-            className="absolute inset-0 w-full h-full object-cover z-10 opacity-0"
+            className="absolute inset-0 w-full h-full object-cover z-10 opacity-0 pointer-events-none"
           >
             <source src="/Stone_fragments_floating_in_dark…_202605131342.mp4" type="video/mp4" />
           </video>
@@ -356,7 +366,7 @@ export default function Hero() {
       </section>
 
       {/* Spacer for smooth transition to next section */}
-      <div ref={spacerRef} className="h-[10vh] bg-black" />
+      <div ref={spacerRef} className="h-[20vh] bg-gradient-to-b from-black to-transparent pointer-events-none" />
     </div>
   );
 }

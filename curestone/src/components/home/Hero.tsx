@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
@@ -34,18 +33,16 @@ const STAGES = [
   },
 ];
 
-// Evenly distributed centers for 4 stages
-const CENTERS = [0.10, 0.36, 0.63, 0.90];
-const HOLD = 0.05;    // balanced hold to prevent overlap
-const FADE = 0.06;    // smoother fade transitions
+const CENTERS = [0.08, 0.36, 0.64, 0.92];
+const HOLD = 0.055;
+const FADE = 0.07;
 
 function calcOpacity(p: number, center: number): number {
   const dist = Math.abs(p - center);
   if (dist <= HOLD) return 1;
   if (dist <= HOLD + FADE) {
-    // Smooth ease-out curve for fade
     const t = (dist - HOLD) / FADE;
-    return 1 - (t * t); // quadratic ease-out
+    return 1 - t * t;
   }
   return 0;
 }
@@ -55,149 +52,163 @@ function calcY(p: number, center: number): number {
   const dir = p < center ? 1 : -1;
   if (dist <= HOLD) return 0;
   const t = Math.min((dist - HOLD) / FADE, 1);
-  // Smoother ease-out for movement
-  return dir * 40 * (t * t);
+  return dir * 36 * (t * t);
 }
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const videoWrapRef = useRef<HTMLDivElement>(null);
   const vignetteRef = useRef<HTMLDivElement>(null);
-  const buttonsRef = useRef<HTMLDivElement>(null);
-  const scrollHintRef = useRef<HTMLDivElement>(null);
-  const spacerRef = useRef<HTMLDivElement>(null);
 
-
-
-  // Per-stage element refs
   const tagRefs = useRef<(HTMLSpanElement | null)[]>([null, null, null, null]);
   const line1Refs = useRef<(HTMLSpanElement | null)[]>([null, null, null, null]);
   const line2Refs = useRef<(HTMLSpanElement | null)[]>([null, null, null, null]);
   const descRefs = useRef<(HTMLParagraphElement | null)[]>([null, null, null, null]);
 
-  // quickTo tweener storage
   const qOpacity = useRef<(((v: number) => void) | null)[][]>([[], [], [], []]);
   const qY = useRef<(((v: number) => void) | null)[][]>([[], [], [], []]);
-  const qBlur = useRef<(((v: number) => void) | null)[][]>([[], [], [], []]);
-
-
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.history.scrollRestoration = "manual";
-      window.scrollTo(0, 0);
+    // Reset scroll position on mount
+    window.history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+
+    // ── iOS/Android video autoplay ──────────────────────────────────────
+    const vid = videoRef.current;
+    if (vid) {
+      vid.defaultMuted = true;
+      vid.muted = true;
+      vid.setAttribute("muted", "");
+      vid.setAttribute("playsinline", "");
+      vid.setAttribute("autoplay", "");
+
+      const tryPlay = () => {
+        const p = vid.play();
+        if (p !== undefined) {
+          p.catch(() => {
+            // Retry on first user interaction (needed for some Android)
+            const retry = () => {
+              vid.play().catch(() => { });
+              document.removeEventListener("touchstart", retry);
+              document.removeEventListener("click", retry);
+            };
+            document.addEventListener("touchstart", retry, { once: true });
+            document.addEventListener("click", retry, { once: true });
+          });
+        }
+      };
+
+      if (vid.readyState >= 2) {
+        tryPlay();
+      } else {
+        vid.addEventListener("canplay", tryPlay, { once: true });
+      }
     }
 
+    // ── Lenis smooth scroll ─────────────────────────────────────────────
+    // Detect iOS for touch multiplier tuning
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
     const lenis = new Lenis({
-      duration: 1.8,        // Slower, smoother scroll
+      duration: isIOS ? 1.2 : 1.6,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
-      wheelMultiplier: 0.7, // Reduced speed for smoother feel
-      touchMultiplier: 1.5,
+      wheelMultiplier: 0.65,
+      touchMultiplier: isIOS ? 1.2 : 1.8,
     });
 
     lenis.on("scroll", ScrollTrigger.update);
 
-    const ticker = (time: number) => {
-      lenis.raf(time * 1000);
-    };
-
+    const ticker = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(ticker);
     gsap.ticker.lagSmoothing(0);
 
-    // Force autoplay for iOS
-    const vid = document.querySelector("video");
-    if (vid) {
-      vid.defaultMuted = true;
-      vid.muted = true;
-      vid.play().catch(() => { });
-    }
-
     const ctx = gsap.context(() => {
-      // ── Set initial state ────────────────────────────────────────────────
+      // ── Initial state ─────────────────────────────────────────────────
       STAGES.forEach((_, i) => {
-        const els = [tagRefs.current[i], line1Refs.current[i], line2Refs.current[i], descRefs.current[i]];
+        const els = [
+          tagRefs.current[i],
+          line1Refs.current[i],
+          line2Refs.current[i],
+          descRefs.current[i],
+        ];
         gsap.set(els, {
           opacity: i === 0 ? 1 : 0,
           y: i === 0 ? 0 : 40,
-          filter: i === 0 ? "blur(0px)" : "blur(14px)",
+          filter: i === 0 ? "blur(0px)" : "blur(12px)",
         });
       });
 
-      // ── Build quickTo tweeners with staggered durations ──
-      // Shorter durations here prevent animations from lagging behind the scroll, which was causing visual overlap
-      const durations = [0.15, 0.22, 0.28, 0.35]; // tag, line1, line2, desc
-
+      // ── QuickTo tweeners ─────────────────────────────────────────────
+      const durations = [0.12, 0.18, 0.24, 0.30];
       STAGES.forEach((_, i) => {
-        const els = [tagRefs.current[i], line1Refs.current[i], line2Refs.current[i], descRefs.current[i]];
+        const els = [
+          tagRefs.current[i],
+          line1Refs.current[i],
+          line2Refs.current[i],
+          descRefs.current[i],
+        ];
         qOpacity.current[i] = els.map((el, j) =>
-          el ? gsap.quickTo(el, "opacity", { duration: durations[j], ease: "power3.out" }) : null
+          el ? gsap.quickTo(el, "opacity", { duration: durations[j], ease: "power2.out" }) : null
         );
         qY.current[i] = els.map((el, j) =>
-          el ? gsap.quickTo(el, "y", { duration: durations[j] + 0.1, ease: "power3.out" }) : null
-        );
-        qBlur.current[i] = els.map((el, j) =>
-          el ? gsap.quickTo(el, "filter", {
-            duration: durations[j] + 0.15,
-            ease: "power2.out",
-            onUpdate: function () {
-              // Ensure filter stays valid during tween
-            }
-          }) : null
+          el ? gsap.quickTo(el, "y", { duration: durations[j] + 0.08, ease: "power2.out" }) : null
         );
       });
 
-      // ── Scroll-driven animation ─────────────────────────────────────────
-      const scrollTrigger = ScrollTrigger.create({
+      // ── Scroll trigger ────────────────────────────────────────────────
+      ScrollTrigger.create({
         trigger: sectionRef.current,
         start: "top top",
-        end: "+=1000%",      // Reduced scroll distance so text appears faster
-        scrub: 2.0,          // Increased scrub for smoother, less jumpy transitions
+        end: "+=700%",
+        scrub: 1.2,
         pin: true,
         anticipatePin: 1,
-        pinSpacing: false,    // CRITICAL: adds spacer for smooth next section transition
+        pinSpacing: true,
         snap: {
           snapTo: CENTERS,
-          duration: { min: 0.5, max: 1.5 },
-          delay: 0.05,
-          ease: "power2.inOut"
+          duration: { min: 0.25, max: 0.8 },
+          delay: 0.0,
+          ease: "power2.inOut",
         },
         onUpdate(self) {
           const p = self.progress;
 
-          // Video slow zoom (1 → 1.08) - subtler
-          gsap.set(videoWrapRef.current, { scale: 1 + 0.08 * p });
+          // Subtle video zoom
+          if (videoWrapRef.current) {
+            gsap.set(videoWrapRef.current, { scale: 1 + 0.06 * p });
+          }
 
-          // Vignette deepens gradually
-          gsap.set(vignetteRef.current, { opacity: 0.50 + 0.40 * p });
+          // Vignette intensity
+          if (vignetteRef.current) {
+            gsap.set(vignetteRef.current, { opacity: 0.48 + 0.38 * p });
+          }
 
-          // Update each stage
+          // Animate each stage
           STAGES.forEach((_, i) => {
             const op = calcOpacity(p, CENTERS[i]);
             const y = calcY(p, CENTERS[i]);
+            const blurVal = op >= 0.99 ? 0 : 12 * (1 - op);
+            const blurStr = `blur(${blurVal.toFixed(1)}px)`;
 
-            // Opacity & Y via quickTo
-            qOpacity.current[i].forEach(fn => fn?.(op));
-            qY.current[i].forEach(fn => fn?.(y));
+            qOpacity.current[i].forEach((fn) => fn?.(op));
+            qY.current[i].forEach((fn) => fn?.(y));
 
-            // Blur with smooth transition
-            const blurVal = op < 1 ? 14 * (1 - op) : 0;
-            [tagRefs.current[i], line1Refs.current[i], line2Refs.current[i], descRefs.current[i]]
-              .forEach(el => {
-                if (el) el.style.filter = `blur(${blurVal.toFixed(1)}px)`;
-              });
+            [
+              tagRefs.current[i],
+              line1Refs.current[i],
+              line2Refs.current[i],
+              descRefs.current[i],
+            ].forEach((el) => {
+              if (el) el.style.filter = blurStr;
+            });
           });
-        }
+        },
       });
-
-      // Store reference for cleanup
-      if (sectionRef.current) {
-        (sectionRef.current as any)._st = scrollTrigger;
-      }
-
     }, containerRef);
 
     return () => {
@@ -208,130 +219,347 @@ export default function Hero() {
   }, []);
 
   return (
-    <div ref={containerRef}>
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        video::-webkit-media-controls-start-playback-button {
+    <>
+      {/* Global resets: no white gaps anywhere */}
+      <style>{`
+        html, body {
+          margin: 0;
+          padding: 0;
+          overflow-x: hidden;
+          background: #000;
+        }
+        /* Kill iOS video controls overlay */
+        video::-webkit-media-controls,
+        video::-webkit-media-controls-panel,
+        video::-webkit-media-controls-start-playback-button,
+        video::-webkit-media-controls-play-button,
+        video::-webkit-media-controls-timeline,
+        video::-webkit-media-controls-current-time-display,
+        video::-webkit-media-controls-fullscreen-button,
+        video::-webkit-media-controls-mute-button,
+        video::-webkit-media-controls-volume-slider,
+        video::-internal-media-controls-download-button {
           display: none !important;
           -webkit-appearance: none !important;
+          opacity: 0 !important;
         }
-        video::-webkit-media-controls {
-          display: none !important;
-        }
-      `}} />
-      <section
-        ref={sectionRef}
-        className="relative w-full h-svh min-h-[600px] overflow-hidden bg-black font-sans"
+        /* Remove tap highlight on mobile */
+        * { -webkit-tap-highlight-color: transparent; }
+        /* Prevent pull-to-refresh from breaking pin */
+        body { overscroll-behavior-y: none; }
+      `}</style>
+
+      <div
+        ref={containerRef}
+        style={{ margin: 0, padding: 0, background: "#000" }}
       >
-        {/* Video */}
-        <div
-          ref={videoWrapRef}
-          className="absolute inset-0 z-0 origin-center will-change-transform bg-black pointer-events-none"
-          dangerouslySetInnerHTML={{
-            __html: `
-              <video
-                autoplay
-                muted
-                loop
-                playsinline
-                preload="auto"
-                class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
-              >
-                <source src="/Stone_fragments_floating_in_dark…_202605131342.mp4" type="video/mp4" />
-              </video>
-            `
+        <section
+          ref={sectionRef}
+          style={{
+            position: "relative",
+            width: "100%",
+            height: "100svh",
+            minHeight: 580,
+            overflow: "hidden",
+            background: "#000",
+            margin: 0,
+            padding: 0,
           }}
-        />
-
-        {/* Overlays */}
-        <div className="absolute inset-0 z-10 pointer-events-none">
+        >
+          {/* ── Video ─────────────────────────────────────────────── */}
           <div
-            ref={vignetteRef}
-            className="absolute inset-0 bg-[radial-gradient(ellipse_90%_90%_at_50%_50%,transparent_15%,rgba(0,0,0,0.88)_85%)]"
-            style={{ opacity: 0.5 }}
-          />
-          <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/80 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-        </div>
-
-        {/* Text stages */}
-        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-          <div className="relative w-full max-w-4xl mx-auto px-6 text-center" style={{ height: "70vh" }}>
-            {STAGES.map((s, i) => (
-              <div key={i} className="absolute inset-0 flex flex-col items-center justify-center px-6">
-
-                {/* Tag */}
-                <span
-                  ref={(el) => { tagRefs.current[i] = el; }}
-                  className="inline-flex items-center gap-3 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.45em] text-white mb-5 will-change-transform"
-                >
-                  <span className="block w-6 h-px bg-white/30" />
-                  {s.tag}
-                  <span className="block w-6 h-px bg-white/30" />
-                </span>
-
-                {/* Headline */}
-                <h1 className="flex flex-col items-center leading-[0.85]">
-                  <span
-                    ref={(el) => { line1Refs.current[i] = el; }}
-                    className="block font-black text-white uppercase tracking-[-0.055em] will-change-transform whitespace-nowrap"
-                    style={{
-                      fontSize: "clamp(2.5rem, 8vw, 8rem)",
-                      textShadow: "0 4px 60px rgba(0,0,0,0.8), 0 0 120px rgba(255,255,255,0.04)",
-                    }}
-                  >
-                    {s.line1}
-                  </span>
-                  <span
-                    ref={(el) => { line2Refs.current[i] = el; }}
-                    className="block font-extralight italic text-white lowercase tracking-wide will-change-transform whitespace-nowrap"
-                    style={{
-                      fontSize: "clamp(1.4rem, 4.5vw, 4rem)",
-                      marginTop: "-0.04em",
-                      textShadow: "0 2px 30px rgba(0,0,0,0.7)",
-                    }}
-                  >
-                    {s.line2}
-                  </span>
-                </h1>
-
-                {/* Description */}
-                <p
-                  ref={(el) => { descRefs.current[i] = el; }}
-                  className="mt-7 text-white font-light leading-relaxed max-w-lg mx-auto will-change-transform"
-                  style={{ fontSize: "clamp(0.82rem, 1.5vw, 1rem)" }}
-                >
-                  {s.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div
-          ref={buttonsRef}
-          className="absolute bottom-16 sm:bottom-20 left-0 right-0 z-30 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-6"
-        >
-          <button
-            onClick={() => {
-              document.getElementById('appointment-section')?.scrollIntoView({ behavior: 'smooth' });
+            ref={videoWrapRef}
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 0,
+              transformOrigin: "center center",
+              willChange: "transform",
+              background: "#000",
+              pointerEvents: "none",
             }}
-            className="group w-full sm:w-auto px-8 py-4 bg-white text-black text-[11px] font-bold uppercase tracking-widest rounded-full shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:bg-white/90 transition-all duration-300 active:scale-95"
           >
-            Book Appointment
-            <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform duration-200">→</span>
-          </button>
-        </div>
+            {/*
+              CRITICAL for iOS autoplay:
+              - `muted` attribute must be present as HTML attr, not just JS prop
+              - `playsInline` / `playsInline` (React camelCase)
+              - `autoPlay` (React camelCase)
+              - No controls
+            */}
+            <video
+              ref={videoRef}
+              muted
+              loop
+              autoPlay
+              playsInline
+              preload="auto"
+              disablePictureInPicture
+              disableRemotePlayback
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+                pointerEvents: "none",
+                // Needed on some Android to hide controls
+                outline: "none",
+              }}
+            >
+              <source
+                src="/Stone_fragments_floating_in_dark…_202605131342.mp4"
+                type="video/mp4"
+              />
+            </video>
+          </div>
 
-        {/* Scroll hint */}
-        <div
-          ref={scrollHintRef}
-          className="absolute bottom-4 left-0 right-0 z-30 flex flex-col items-center gap-1.5 pointer-events-none"
-        >
-          <span className="text-[8px] uppercase tracking-[0.55em] text-white">Scroll</span>
-          <div className="w-px h-8 bg-gradient-to-b from-white/35 to-transparent" />
-        </div>
-      </section>
-    </div>
+          {/* ── Overlays ─────────────────────────────────────────── */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 10,
+              pointerEvents: "none",
+            }}
+          >
+            {/* Radial vignette */}
+            <div
+              ref={vignetteRef}
+              style={{
+                position: "absolute",
+                inset: 0,
+                background:
+                  "radial-gradient(ellipse 90% 90% at 50% 50%, transparent 15%, rgba(0,0,0,0.88) 85%)",
+                opacity: 0.48,
+              }}
+            />
+            {/* Top fade */}
+            <div
+              style={{
+                position: "absolute",
+                inset: "0 0 auto 0",
+                height: 120,
+                background: "linear-gradient(to bottom, rgba(0,0,0,0.75), transparent)",
+              }}
+            />
+            {/* Bottom fade */}
+            <div
+              style={{
+                position: "absolute",
+                inset: "auto 0 0 0",
+                height: 200,
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 55%, transparent 100%)",
+              }}
+            />
+          </div>
+
+          {/* ── Text stages ──────────────────────────────────────── */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 20,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              pointerEvents: "none",
+            }}
+          >
+            <div
+              style={{
+                position: "relative",
+                width: "100%",
+                maxWidth: 900,
+                margin: "0 auto",
+                padding: "0 24px",
+                height: "70vh",
+                textAlign: "center",
+              }}
+            >
+              {STAGES.map((s, i) => (
+                <div
+                  key={i}
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "0 24px",
+                  }}
+                >
+                  {/* Tag */}
+                  <span
+                    ref={(el) => { tagRefs.current[i] = el; }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 12,
+                      fontSize: "clamp(9px, 2vw, 11px)",
+                      fontWeight: 600,
+                      letterSpacing: "0.42em",
+                      textTransform: "uppercase",
+                      color: "#fff",
+                      marginBottom: 20,
+                      willChange: "transform, opacity",
+                    }}
+                  >
+                    <span style={{ display: "block", width: 24, height: 1, background: "rgba(255,255,255,0.3)" }} />
+                    {s.tag}
+                    <span style={{ display: "block", width: 24, height: 1, background: "rgba(255,255,255,0.3)" }} />
+                  </span>
+
+                  {/* Headline */}
+                  <h1 style={{ margin: 0, padding: 0, display: "flex", flexDirection: "column", alignItems: "center", lineHeight: 0.85 }}>
+                    <span
+                      ref={(el) => { line1Refs.current[i] = el; }}
+                      style={{
+                        display: "block",
+                        fontWeight: 900,
+                        color: "#fff",
+                        textTransform: "uppercase",
+                        letterSpacing: "-0.055em",
+                        fontSize: "clamp(2.4rem, 8vw, 7.5rem)",
+                        textShadow: "0 4px 60px rgba(0,0,0,0.8)",
+                        willChange: "transform, opacity",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {s.line1}
+                    </span>
+                    <span
+                      ref={(el) => { line2Refs.current[i] = el; }}
+                      style={{
+                        display: "block",
+                        fontWeight: 200,
+                        fontStyle: "italic",
+                        color: "#fff",
+                        textTransform: "lowercase",
+                        letterSpacing: "0.02em",
+                        fontSize: "clamp(1.3rem, 4.2vw, 3.8rem)",
+                        marginTop: "-0.04em",
+                        textShadow: "0 2px 30px rgba(0,0,0,0.7)",
+                        willChange: "transform, opacity",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {s.line2}
+                    </span>
+                  </h1>
+
+                  {/* Description */}
+                  {s.desc && (
+                    <p
+                      ref={(el) => { descRefs.current[i] = el; }}
+                      style={{
+                        marginTop: 28,
+                        marginBottom: 0,
+                        color: "rgba(255,255,255,0.82)",
+                        fontWeight: 300,
+                        lineHeight: 1.65,
+                        maxWidth: 480,
+                        fontSize: "clamp(0.8rem, 1.5vw, 0.98rem)",
+                        willChange: "transform, opacity",
+                      }}
+                    >
+                      {s.desc}
+                    </p>
+                  )}
+                  {/* Empty ref placeholder for stages without desc */}
+                  {!s.desc && (
+                    <p
+                      ref={(el) => { descRefs.current[i] = el; }}
+                      style={{ margin: 0, height: 0, overflow: "hidden" }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── CTA Button ───────────────────────────────────────── */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "clamp(56px, 8vh, 80px)",
+              left: 0,
+              right: 0,
+              zIndex: 30,
+              display: "flex",
+              justifyContent: "center",
+              padding: "0 24px",
+            }}
+          >
+            <button
+              onClick={() => {
+                document
+                  .getElementById("appointment-section")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
+              style={{
+                padding: "14px 36px",
+                background: "#fff",
+                color: "#000",
+                border: "none",
+                borderRadius: 999,
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                cursor: "pointer",
+                boxShadow: "0 0 30px rgba(255,255,255,0.12)",
+                transition: "background 0.25s, transform 0.15s",
+                WebkitTapHighlightColor: "transparent",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.88)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
+              onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
+              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              onTouchStart={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
+              onTouchEnd={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            >
+              Book Appointment →
+            </button>
+          </div>
+
+          {/* ── Scroll hint ──────────────────────────────────────── */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 14,
+              left: 0,
+              right: 0,
+              zIndex: 30,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 6,
+              pointerEvents: "none",
+            }}
+          >
+            <span
+              style={{
+                fontSize: 8,
+                letterSpacing: "0.5em",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,0.55)",
+              }}
+            >
+              Scroll
+            </span>
+            <div
+              style={{
+                width: 1,
+                height: 28,
+                background: "linear-gradient(to bottom, rgba(255,255,255,0.35), transparent)",
+              }}
+            />
+          </div>
+        </section>
+      </div>
+    </>
   );
 }

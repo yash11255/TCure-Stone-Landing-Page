@@ -151,14 +151,14 @@ export default function Hero() {
       // we do a smooth ping-pong by manually stepping backwards if playbackRate is reversed.
       
       // If playing forward and near end
-      if (active.playbackRate > 0 && active.currentTime >= active.duration - 0.1) {
+      if (active.dataset.reversing !== "true" && active.currentTime >= active.duration - 0.1) {
          // Pause forward playback
          active.pause();
          // Simulate reverse playback by using requestAnimationFrame to step back
          let lastTime = performance.now();
-         const reversePlay = (now) => {
+         const reversePlay = (now: number) => {
              // If we switched videos or user scrolled away, stop
-             if (xfading || active.playbackRate > 0) return; 
+             if (xfading || active.dataset.reversing !== "true") return; 
              
              const dt = (now - lastTime) / 1000; // delta time in seconds
              lastTime = now;
@@ -168,13 +168,14 @@ export default function Hero() {
              
              // If reached start, play forward again
              if (active.currentTime <= 0) {
+                 active.dataset.reversing = "false";
                  active.playbackRate = 1;
                  active.play().catch(()=>{});
                  return;
              }
              requestAnimationFrame(reversePlay);
          };
-         active.playbackRate = -1; // Flag to indicate reverse mode
+         active.dataset.reversing = "true"; // Flag to indicate reverse mode
          requestAnimationFrame(reversePlay);
       }
     };

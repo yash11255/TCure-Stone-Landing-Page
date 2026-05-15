@@ -42,6 +42,7 @@ export default function SpecialtyPage() {
                       style={{ marginRight: i < arr.length - 1 ? '0.25em' : 0 }}
                     >
                       {word}
+                      {i === 1 && <br />}
                     </span>
                   ))}
                 </h1>

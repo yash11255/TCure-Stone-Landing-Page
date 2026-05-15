@@ -42,7 +42,7 @@ const Footer = () => {
         { label: "URSL Treatment", href: "/ursl" },
         { label: "Mini PCNL Surgery", href: "/mini-pcnl" },
         { label: "Kidney Stone Surgery", href: "/gurgaon" },
-        { label: "Gall Bladder Surgery", href: "/specialties" },
+        { label: "Gall Bladder Surgery", href: "/" },
       ],
     },
     {
@@ -169,7 +169,7 @@ const Footer = () => {
               </div>
             </div>
             <a
-              href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3508.3183934021354!2d77.06771327549376!3d28.439816975770583!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d19559d21f213%3A0xa736733167a5023b!2sCure%20Stone!5e0!3m2!1sen!2sin!4v1776770895170!5m2!1sen!2sin"
+              href="https://share.google/VjnKWDjoss7qaD1mi"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest no-underline"
@@ -188,7 +188,7 @@ const Footer = () => {
             {['Privacy', 'Terms'].map((item) => (
               <Link
                 key={item}
-                href={`/${item.toLowerCase()}`}
+                href={`/`}
                 className="text-[10px] font-bold text-white/20 uppercase tracking-widest no-underline"
               >
                 {item}

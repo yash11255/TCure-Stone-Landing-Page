@@ -110,7 +110,7 @@ const ServiceCard = ({ service }: { service: typeof SERVICES[0] }) => (
       {service.shortDesc}
     </p>
     <Link 
-      href={`/specialties/${service.slug}`}
+      href={service.slug === '/' ? '/' : `/specialties/${service.slug}`}
       className="text-primary font-black text-sm uppercase tracking-widest hover:tracking-[0.2em] transition-all flex items-center gap-2 group/btn no-underline"
     >
       Explore Excellence <span className="group-hover:translate-x-2 transition-transform">→</span>

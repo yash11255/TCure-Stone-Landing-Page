@@ -36,6 +36,11 @@ export default function Navbar() {
     document.body.style.overflow = isOpen ? "hidden" : "unset";
   }, [isOpen]);
 
+  // Ensure new page navigation starts from the top
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Cure Stone AI", href: "/checker", highlight: true },

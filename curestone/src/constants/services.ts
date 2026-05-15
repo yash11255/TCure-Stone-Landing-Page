@@ -18,7 +18,7 @@ export const SERVICES: ServiceDetail[] = [
     slug: "kidney-stone-treatment",
     icon: "🔬",
     name: "Kidney Stone Treatment",
-    shortDesc: "RIRS, ESWL, URSL, PCNL — tailored to stone size & location. India's first Fans-RIRS pioneer.",
+    shortDesc: "Fans RIRS, ESWL, URSL, PCNL — tailored to stone size & location. India's first Fans-RIRS pioneer.",
     fullDesc: "We offer a comprehensive spectrum of kidney stone treatments, from non-invasive shockwave lithotripsy to advanced laser surgeries. As pioneers in FANS-RIRS (Fluoroscopy-free RIRS) in India, we ensure maximum stone clearance with zero radiation exposure.",
     treatments: ["RIRS Laser Surgery", "ESWL Lithotripsy", "URSL (Ureteroscopy)", "Mini-PCNL"],
     stats: [
@@ -60,7 +60,7 @@ export const SERVICES: ServiceDetail[] = [
     name: "Urology & Andrology",
     shortDesc: "Expert diagnosis for prostate issues, UTIs, male sexual health and urological disorders.",
     fullDesc: "Dedicated care for all urological conditions and male reproductive health. Our team specializes in precision diagnosis and treatment of prostate enlargement (BPH), recurrent UTIs, and male fertility concerns using the latest medical protocols.",
-    treatments: ["BPH Treatment (HoLEP/TURP)", "Prostate Screening", "Male Infertility Care", "UTI Management"],
+    treatments: ["BPH Treatment (HoLEP/TURP)", "Prostate Screening", "Male Infertility Care", "UTI Management", "Circumcision", "Varicocel", "Hydrocele", "Urethral Stricture"],
     stats: [
       { label: "Expert Doctors", value: "15+ Yrs Exp" },
       { label: "Patient Trust", value: "30,000+" },

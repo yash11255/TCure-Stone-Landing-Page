@@ -104,7 +104,7 @@ export default function PatientMosaic() {
           </div>
 
           <p className="text-slate-500 text-sm sm:text-base lg:text-lg font-medium max-w-sm border-l-2 border-slate-200 pl-4 sm:pl-6">
-            Watch authentic recovery journeys from the world's most advanced
+            Watch authentic recovery journeys from the India's most advanced
             kidney stone center.
           </p>
         </div>

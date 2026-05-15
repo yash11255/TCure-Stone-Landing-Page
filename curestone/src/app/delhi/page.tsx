@@ -5,6 +5,7 @@ import Link from "next/link";
 import DoctorProfile from "@/components/home/DoctorProfile";
 import GlobalReach from "@/components/home/GlobalReach";
 import LocationLeadForm from "@/components/home/LocationLeadForm";
+import ExpertVideos from "@/components/home/ExpertVideos";
 
 export const metadata: Metadata = {
   title: "Best Kidney Stone Surgery in Delhi | Laser Treatment & RIRS Experts",
@@ -171,6 +172,9 @@ export default function DelhiSurgeryPage() {
         </section>
 
         <DoctorProfile />
+
+        {/* Expert Videos */}
+        <ExpertVideos />
 
         <GlobalReach />
 

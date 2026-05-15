@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 const DoctorProfile = () => {
   const stats = [
-    { label: "Patients Treated", value: "9K+", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
+    { label: "Surgeries Done", value: "9K+", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
     { label: "Publications", value: "200+", icon: BookOpen, color: "text-indigo-600", bg: "bg-indigo-50" },
     { label: "Awards Won", value: "22+", icon: Trophy, color: "text-amber-500", bg: "bg-amber-50" },
     { label: "Years Experience", value: "15+", icon: History, color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -36,20 +36,22 @@ const DoctorProfile = () => {
 
   const achievements = [
     {
-      icon: ShieldCheck,
-      text: "Pioneer of Fans-RIRS in North India",
-      subtext: "Leading North India's first Fluoroscopy-free (Radiation-free) laser program."
-    },
-    {
-      icon: GraduationCap,
-      text: "1st Rank Holder in MCh Urology",
-      subtext: "VMMC & Safdarjung Hospital (RML), New Delhi"
-    },
-    {
       icon: Award,
       text: "1st Ever to start Fans-RIRS in North India.",
       subtext: "By - Dr. Deepanshu Gupta"
     },
+
+    {
+      icon: GraduationCap,
+      text: "1st Rank Holder in MCh Urology",
+      subtext: "(RML Hospital), New Delhi"
+    },
+    {
+      icon: ShieldCheck,
+      text: "Pioneer of Fans-RIRS in North India",
+      subtext: "Leading North India's first Fluoroscopy-free (Radiation-free) laser program."
+    },
+
     {
       icon: Star,
       text: "4.9/5 Patient Satisfaction",
@@ -112,8 +114,8 @@ const DoctorProfile = () => {
                     <p className="text-blue-200 text-xs sm:text-sm font-bold flex items-center gap-2">
                       Senior Urologist & Kidney Stone Specialist
                     </p>
-                    <p className="text-blue-200/60 text-[10px] sm:text-[11px] font-medium leading-relaxed">
-                      MBBS · MS (Gold Medalist) · MCh Urology (Rank 1)
+                    <p className="text-blue-200/60 text-[12px] sm:text-[12px] font-medium leading-relaxed">
+                      MBBS · MS (PGIMS) · MCh Urology (Rank 1)
                     </p>
                   </div>
                 </div>

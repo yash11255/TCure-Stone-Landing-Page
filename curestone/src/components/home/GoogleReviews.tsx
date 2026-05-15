@@ -38,7 +38,7 @@ const STATIC_FALLBACKS: Review[] = [
 export default function GoogleReviews() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [stats, setStats] = useState({ rating: 5.0, total: "1200+" });
+  const [stats, setStats] = useState({ rating: 4.9, total: "REAL" });
   const [loading, setLoading] = useState(true);
 
   // PLACE ID for Cure Stone Hospital (Sector 51, Gurgaon)
@@ -66,7 +66,7 @@ export default function GoogleReviews() {
 
           setReviews(formatted.length > 0 ? formatted : STATIC_FALLBACKS);
           setStats({
-            rating: data.result.rating || 5.0,
+            rating: data.result.rating || 4.9,
             total: data.result.user_ratings_total || 586
           });
         } else {
@@ -118,12 +118,12 @@ export default function GoogleReviews() {
             <p className="text-slate-500 font-medium">{stats.rating >= 4.5 ? 'EXCELLENT' : 'VERY GOOD'}</p>
             <p className="text-sm text-slate-400 mt-1 uppercase tracking-tighter">Based on {stats.total} reviews</p>
             <a
-              href={`https://search.google.com/local/writereview?placeid=${PLACE_ID}`}
+              href={`https://share.google/r47bQltYFV5dnjJdk`}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-6 px-6 py-2.5 bg-blue-600 text-white rounded-full text-sm font-semibold hover:bg-blue-700 transition-colors"
             >
-              Write a Review
+              See More Reviews
             </a>
           </div>
 

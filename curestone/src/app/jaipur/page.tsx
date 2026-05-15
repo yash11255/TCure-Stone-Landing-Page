@@ -7,13 +7,13 @@ import LocationLeadForm from "@/components/home/LocationLeadForm";
 
 export const metadata: Metadata = {
   title: "Kidney Stone Surgery Cost in Jaipur | CureStone",
-  description: "Advanced laser treatment starting from ₹55,000. Experience USFDA approved technology with Jaipur's top-tier urologists.",
+  description: "Advanced laser treatment starting from ₹58,000. Experience USFDA approved technology with Jaipur's top-tier urologists.",
   alternates: {
     canonical: "https://curestone.in/jaipur",
   },
   openGraph: {
     title: "Kidney Stone Surgery Cost in Jaipur | CureStone",
-    description: "Advanced laser treatment starting from ₹55,000. Experience USFDA approved technology with Jaipur's top-tier urologists.",
+    description: "Advanced laser treatment starting from ₹58,000. Experience USFDA approved technology with Jaipur's top-tier urologists.",
     url: "https://curestone.in/jaipur",
     siteName: "CureStone",
     images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "Kidney Stone Surgery Cost in Jaipur | CureStone" }],
@@ -71,10 +71,10 @@ export default function JaipurSurgeryPage() {
         .ambient-shadow { box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.1); }
       `}} />
 
-      
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
-        <Navbar />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
+      <Navbar />
 
       <main className="flex-grow pt-20">
         {/* Hero Section */}
@@ -101,11 +101,11 @@ export default function JaipurSurgeryPage() {
                 Kidney Stone Surgery <br />Cost in <span className="text-amber-600">Jaipur</span>
               </h1>
               <p className="text-xl text-slate-600 leading-relaxed max-w-2xl mb-12">
-                Advanced laser treatment starting from <span className="text-blue-900 font-bold text-3xl block lg:inline mt-2 lg:mt-0">₹55,000</span>. Experience USFDA approved technology with Jaipur&apos;s top-tier urologists.
+                Advanced laser treatment starting from <span className="text-blue-900 font-bold text-3xl block lg:inline mt-2 lg:mt-0">₹58,000</span>. Experience USFDA approved technology with Jaipur&apos;s top-tier urologists.
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                 <div className="flex flex-col gap-1">
-                  <span className="text-blue-900 font-bold text-2xl">5000+</span>
+                  <span className="text-blue-900 font-bold text-2xl">9000+</span>
                   <span className="text-sm text-slate-600 font-medium">Successful Surgeries</span>
                 </div>
                 <div className="flex flex-col gap-1">
@@ -176,7 +176,7 @@ export default function JaipurSurgeryPage() {
           <div className="editorial-gradient rounded-[3rem] p-12 lg:p-20 text-center relative overflow-hidden">
             <div className="relative z-10">
               <h2 className="font-sans text-4xl lg:text-6xl font-extrabold text-white mb-8 tracking-tighter">Ready to be Stone-Free?</h2>
-              <p className="text-blue-100 text-xl max-w-2xl mx-auto mb-12 opacity-90">Join 5000+ happy patients in Jaipur. Book your first clinical consultation with our experts today.</p>
+              <p className="text-blue-100 text-xl max-w-2xl mx-auto mb-12 opacity-90">Join 9000+ happy patients in Jaipur. Book your first clinical consultation with our experts today.</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <button className="bg-amber-500 text-white px-12 py-5 rounded-full font-sans font-bold text-lg hover:bg-white hover:text-blue-900 transition-all duration-300">
                   Book Free Appointment

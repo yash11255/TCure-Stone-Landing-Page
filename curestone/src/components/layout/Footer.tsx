@@ -48,7 +48,7 @@ const Footer = () => {
     {
       title: "Quick Links",
       links: [
-        { label: "CureStone AI", href: "/checker" },
+        { label: "Cure Stone AI", href: "/checker" },
         { label: "Book Free Consultation", href: "/book" },
       ],
     },
@@ -74,7 +74,7 @@ const Footer = () => {
               </div>
             </Link>
             <p className="text-white/50 text-[13px] leading-relaxed max-w-sm">
-              CureStone Hospital is a premier urology destination in Gurgaon, delivering precision-driven laser kidney stone surgeries and comprehensive urinary care.
+              Cure Stone Hospital is a premier urology destination in Gurgaon, delivering precision-driven laser kidney stone surgeries and comprehensive urinary care.
             </p>
             <div className="space-y-3 text-[13px]">
               <a href="tel:+918800263884" className="flex items-center gap-3 text-white/70 no-underline">
@@ -117,13 +117,15 @@ const Footer = () => {
 
           {/* Locations */}
           <div className="flex flex-col gap-6">
-
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+            <h4 className="text-[10px] font-bold text-black/30 uppercase tracking-[0.25em]">
+              Our Locations
+            </h4>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
               {locationLinks.map((link, lIdx) => (
                 <Link
                   key={lIdx}
                   href={link.href}
-                  className="text-[12px] text-white/50 no-underline"
+                  className="text-[13px] text-white/60 no-underline"
                 >
                   {link.label}
                 </Link>
@@ -180,7 +182,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
-            © 2026 CureStone Hospital. All rights reserved.
+            © 2026 Cure Stone Hospital. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             {['Privacy', 'Terms'].map((item) => (

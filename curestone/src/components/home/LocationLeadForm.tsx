@@ -78,7 +78,7 @@ export default function LocationLeadForm({ locationName = "your area" }: { locat
         </select>
       </div>
       <button disabled={loading} type="submit" className="w-full editorial-gradient text-white font-sans font-bold py-5 rounded-full mt-4 hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:opacity-70">
-        {loading ? "Submitting..." : "Book OPD Appointment"} <span className="material-symbols-outlined">event_available</span>
+        {loading ? "Submitting..." : "Get Estimate Now"} <span className="material-symbols-outlined">event_available</span>
       </button>
     </form>
   );

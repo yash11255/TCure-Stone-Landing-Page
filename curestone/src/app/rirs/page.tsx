@@ -41,7 +41,7 @@ export default function RIRSPage() {
             <div className="max-w-3xl">
               <span className="inline-block px-4 py-1.5 mb-6 text-[10px] font-black tracking-widest text-primary bg-primary/10 border border-primary/20 rounded-full uppercase">Gold Standard Treatment</span>
               <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tight text-slate-900 leading-[1.1] md:leading-[1.05] mb-6">
-                RIRS <span className="text-primary italic">Laser Surgery</span>
+                Fans RIRS <span className="text-primary italic">Laser Surgery</span>
               </h1>
               <p className="text-base sm:text-lg md:text-xl text-slate-600 font-medium leading-relaxed max-w-2xl mb-10">
                 Retrograde Intrarenal Surgery — the world&apos;s most advanced kidney stone treatment. A flexible laser scope passes through natural pathways. <strong className="text-slate-900">Zero cuts. Zero radiation. 98% stone-free.</strong>

@@ -8,13 +8,13 @@ gsap.registerPlugin(ScrollTrigger);
 
 const STAGES = [
   {
-    tag: "Dr. Deepanshu Gupta",
+    tag: "",
     line1: "WELCOME TO",
     line2: "CURE STONE",
     desc: "",
   },
   {
-    tag: "Precision Care",
+    tag: "",
     line1: "INDIA'S BEST",
     line2: "KIDNEY STONE TREATMENT",
     desc: "1st Ever to start Fans-RIRS in North India — By Dr. Deepanshu Gupta.",
@@ -23,7 +23,7 @@ const STAGES = [
     tag: "98% Success",
     line1: "UNMATCHED",
     line2: "SUCCESS RATE",
-    desc: "Maintaining a 98% stone-free success rate over 30,000+ patient lives.",
+    desc: "Maintaining a 98% stone-free success rate over 9,000+ Surgeries done.",
   },
   {
     tag: "Book Free Consultation",
@@ -588,7 +588,7 @@ export default function Hero() {
               onTouchStart={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
               onTouchEnd={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
-              Book Appointment →
+              Book Free Appointment →
             </button>
           </div>
 

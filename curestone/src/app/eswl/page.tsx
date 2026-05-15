@@ -46,7 +46,7 @@ export default function ESWLPage() {
               <iframe
                 width="100%"
                 height="100%"
-                src="https://www.youtube.com/embed/cQMDYm__gHM?si=-L4YukvgqyoQ6foJ"
+                src="https://www.youtube.com/embed/tNx0HcofMgc"
                 title="ESWL Procedure Video"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

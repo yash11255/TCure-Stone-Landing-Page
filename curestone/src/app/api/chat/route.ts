@@ -46,16 +46,21 @@ You are the **Cure Stone Hospital AI Assistant**. You represent a state-of-the-a
 export async function POST(req: NextRequest) {
   // --- SPAM PROTECTION ---
   const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
-  const { success, limit, reset } = await ratelimit.limit(`chat_${ip}`);
 
-  if (!success) {
-    return NextResponse.json(
-      { reply: "Slow down! You've sent too many messages. Please wait a minute." },
-      {
-        status: 429,
-        headers: { "X-RateLimit-Limit": limit.toString(), "X-RateLimit-Reset": reset.toString() }
-      }
-    );
+  try {
+    const { success, limit, reset } = await ratelimit.limit(`chat_${ip}`);
+
+    if (!success) {
+      return NextResponse.json(
+        { reply: "Slow down! You've sent too many messages. Please wait a minute." },
+        {
+          status: 429,
+          headers: { "X-RateLimit-Limit": limit.toString(), "X-RateLimit-Reset": reset.toString() }
+        }
+      );
+    }
+  } catch (rateLimitError) {
+    console.warn("Rate limit check failed (Redis might be down), allowing request:", rateLimitError);
   }
 
   try {
@@ -73,7 +78,7 @@ export async function POST(req: NextRequest) {
       // Inject user's name gracefully so AI retains personalized context regardless of window sliding
       finalSystemPrompt = `You are talking to the user named **${userName}**. The user's name and contact information are already securely on file. Do NOT ask for their name or phone number. Frequently address them by their name to maintain a premium personalized experience.\n\n${finalSystemPrompt}`;
     }
-    
+
     if (language === 'hi') {
       finalSystemPrompt += "\n\nIMPORTANT: Respond in Hindi language only.";
     }
@@ -93,7 +98,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ reply: chatCompletion.choices[0]?.message?.content || "" });
 
   } catch (error: any) {
-    console.error("API Error:", error);
+    console.error("Chat API Error:", error?.message || error);
+    console.error("Error details:", JSON.stringify(error?.error || error?.response?.data || {}, null, 2));
     return NextResponse.json({ reply: "I'm connecting with the hospital. Call +91 88002 63884." }, { status: 200 });
   }
 }

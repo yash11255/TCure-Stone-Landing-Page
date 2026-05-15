@@ -458,7 +458,7 @@ export default function Hero() {
                       display: "inline-flex",
                       alignItems: "center",
                       gap: 12,
-                      fontSize: "clamp(9px, 2vw, 11px)",
+                      fontSize: "clamp(12px, 2vw, 18px)",
                       fontWeight: 900,
                       letterSpacing: "0.28em",
                       textTransform: "uppercase",

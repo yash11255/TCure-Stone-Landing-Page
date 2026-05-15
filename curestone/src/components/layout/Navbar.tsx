@@ -40,8 +40,11 @@ export default function Navbar() {
     { name: "Home", href: "/" },
     { name: "CureStone AI", href: "/checker", highlight: true },
     { name: "RIRS", href: "/rirs" },
-    { name: "ESWL", href: "/eswl" },
     { name: "URSL", href: "/ursl" },
+    { name: "Mini PCNL", href: "/mini-pcnl" },
+    { name: "ESWL", href: "/eswl" },
+
+
   ];
 
   if (!mounted) return <nav className="fixed top-0 w-full h-20 z-50 bg-transparent" />;
@@ -58,15 +61,15 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Links */}
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-1 xl:gap-2">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className={`relative px-4 py-2 group ${link.highlight ? "" : "font-bold text-slate-600 hover:text-primary text-sm"}`}>
+              <Link key={link.href} href={link.href} className={`relative px-2 xl:px-4 py-2 group whitespace-nowrap ${link.highlight ? "" : "font-bold text-slate-600 hover:text-primary text-sm"}`}>
                 {link.highlight ? (
                   <div className="relative">
                     {/* Pulsing Highlight Border for CureStone AI */}
                     <div className="absolute inset-0 rounded-full border-2 border-primary animate-pulse" />
                     <div className="absolute inset-[-4px] rounded-full border border-primary/20" />
-                    <span className="relative px-4 py-1.5 flex items-center gap-2 text-sm font-black text-primary uppercase">
+                    <span className="relative px-3 xl:px-4 py-1.5 flex items-center gap-2 text-xs xl:text-sm font-black text-primary uppercase whitespace-nowrap">
                       {link.name}
                     </span>
                   </div>
@@ -76,19 +79,19 @@ export default function Navbar() {
           </div>
 
           {/* Right Section: Socials + Phone + Book Button */}
-          <div className="hidden md:flex items-center gap-5">
-            <div className="flex items-center gap-3 pr-4 border-r border-slate-200">
+          <div className="hidden md:flex items-center gap-4 xl:gap-5">
+            <div className="hidden xl:flex items-center gap-3 pr-4 border-r border-slate-200">
               <a href="https://www.youtube.com/@cure_stone" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-[#FF0000] transition-colors"><SocialIcons.Youtube /></a>
               <a href="https://www.instagram.com/the_cure_stone/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-primary transition-colors"><SocialIcons.Instagram /></a>
               <a href="https://www.facebook.com/curestone/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-primary transition-colors"><SocialIcons.Facebook /></a>
             </div>
 
-            <a href="tel:+918800263884" className="text-sm font-black text-slate-700 hover:text-primary whitespace-nowrap">+91 88002 63884</a>
+            <a href="tel:+918800263884" className="hidden xl:block text-sm font-black text-slate-700 hover:text-primary whitespace-nowrap">+91 88002 63884</a>
 
-            <Link href="/book" className="group relative px-7 py-2.5 bg-primary text-white font-black text-xs rounded-full uppercase tracking-widest shadow-lg shadow-primary/30">
+            <Link href="/book" className="group relative px-5 xl:px-7 py-2 md:py-2.5 bg-primary text-white font-black text-[10px] md:text-xs rounded-full uppercase tracking-widest shadow-lg shadow-primary/30">
               {/* Thick Outer Highlight Border */}
               <div className="absolute inset-[-3px] rounded-full border-2 border-primary group-hover:border-primary-dark transition-colors" />
-              <span className="relative">BOOK YOUR APPOINTMENT</span>
+              <span className="relative whitespace-nowrap">BOOK APPOINTMENT</span>
             </Link>
           </div>
 

@@ -40,6 +40,7 @@ const Footer = () => {
         { label: "RIRS Laser Surgery", href: "/rirs" },
         { label: "ESWL Lithotripsy", href: "/eswl" },
         { label: "URSL Treatment", href: "/ursl" },
+        { label: "Mini PCNL Surgery", href: "/mini-pcnl" },
         { label: "Kidney Stone Surgery", href: "/gurgaon" },
         { label: "Gall Bladder Surgery", href: "/specialties" },
       ],
@@ -149,7 +150,7 @@ const Footer = () => {
           <div className="space-y-6">
             <div>
               <h4 className="text-primary text-sm font-bold uppercase tracking-widest mb-2">Visit Our Hospital</h4>
-              <p className="text-xl font-medium text-white/90"> Cure Stone</p>
+              <p className="text-xl font-medium text-white/90"> Cure Stone Hospital</p>
               <p className="text-white/50 text-sm mt-1">Sector 52, Near Plot, 3, Rd No D-13 A, Ardee City, Gurugram, Haryana 122003</p>
             </div>
             <div className="flex flex-wrap gap-8">

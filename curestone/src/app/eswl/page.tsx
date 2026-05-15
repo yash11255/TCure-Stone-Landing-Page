@@ -113,7 +113,7 @@ export default function ESWLPage() {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(43,92,230,0.05),transparent)]" />
             <div className="relative z-10">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 mb-4">Is ESWL Right for Your Stone?</h2>
-              <p className="text-sm sm:text-base text-slate-600 font-medium mb-8 max-w-lg mx-auto">Dr. Deepanshu will review your CT KUB and determine the best treatment — ESWL, RIRS or PCNL — for your specific case.</p>
+              <p className="text-sm sm:text-base text-slate-600 font-medium mb-8 max-w-lg mx-auto">Dr. Deepanshu Gupta will review your CT KUB and determine the best treatment — ESWL, RIRS or PCNL — for your specific case.</p>
               <Link href="/book" className="inline-flex items-center gap-2 px-8 sm:px-10 py-4 bg-primary text-white font-black rounded-2xl shadow-xl shadow-primary/30 hover:bg-primary-dark hover:scale-105 transition-all text-center">
                 Get Expert Opinion →
               </Link>

@@ -32,6 +32,46 @@ const STATIC_FALLBACKS: Review[] = [
     rating: 5,
     content: "An excellent doctor—very friendly, patient, and professional. He explained everything clearly and made me feel completely comfortable. Best urologist one can ever come across. Truly perfect in his work. Highly recommended urologist !!",
     color: "bg-slate-600"
+  },
+  {
+    id: 'f2',
+    name: "Zakirhussain",
+    initials: "P",
+    image: "https://lh3.googleusercontent.com/a-/ALV-UjWsxlfLWhloWXpGaGT1ShU0HLQx1kLIr-zncybqQ3U7yPpG5jSp=w144-h144-p-rp-mo-br100",
+    date: "1 week ago",
+    rating: 5,
+    content: "Dr. Deepanshu Gupta Sir is truly one of the finest kidney stone specialists in India. I traveled all the way from Mumbai specifically to undergo surgery under his care, and I can confidently say that it was the best decision I made",
+    color: "bg-slate-600"
+  },
+  {
+    id: 'f2',
+    name: "Shobhit Jaryal",
+    initials: "P",
+    image: "https://lh3.googleusercontent.com/a-/ALV-UjVm5ukTku-oIZDIdJDEDJNnT0JhbnG7csKMNQP276F1NIz-SGRe0g=w144-h144-p-rp-mo-ba2-br100",
+    date: "3 week ago",
+    rating: 5,
+    content: "Had a superb and great experience. My kidney stone surgery went great. Dr Deepanshu and Staff were supportive and professional and kept me updated throughout the surgery and night stay.Overall would 100% recommend.",
+    color: "bg-slate-600"
+  },
+  {
+    id: 'f2',
+    name: "vijay",
+    initials: "P",
+    image: "https://lh3.googleusercontent.com/a-/ALV-UjVfiGeqt8J7vEskngsOrcRukiQGULP_pgq4czyeaqBCMifLiII=w144-h144-p-rp-mo-br100",
+    date: "1 week ago",
+    rating: 5,
+    content: "To this amazing team of doctors thank you for your compassion and expertise. You not only provided a cure but also gave us hope. We will be forever grateful for everything you have done. Special Thanks Dr Deepanshu Gupta Sir and Cure Stone Team😊👍 Go Great Guns Cure Stone Team🤍",
+    color: "bg-slate-600"
+  },
+  {
+    id: 'f2',
+    name: "Sunny",
+    initials: "P",
+    image: "https://lh3.googleusercontent.com/a-/ALV-UjXmHknejWQ7R-KNgCRIBN_1K7S2h_wrZ8wU5XDn5CqaDloKHyo0=w144-h144-p-rp-mo-br100",
+    date: "1 week ago",
+    rating: 5,
+    content: "Dr. Deepanshu Gupta Ji and Dr. Shambhav Chandra are the best surgeon in India for Gall & Kidney Stone. They are expert to complete a Painless surgery. Kidney surgery without stitches and gall surgery with minimum stitches. Their coordinator Bhavesh Sir is also a friendly person. I wish for their best in life😍🌺",
+    color: "bg-slate-600"
   }
 ];
 
@@ -40,6 +80,7 @@ export default function GoogleReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [stats, setStats] = useState({ rating: 4.9, total: "REAL" });
   const [loading, setLoading] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   // PLACE ID for Cure Stone Hospital (Sector 51, Gurgaon)
   // User should update this if necessary
@@ -92,6 +133,23 @@ export default function GoogleReviews() {
     }
   };
 
+  useEffect(() => {
+    if (loading || reviews.length === 0 || isPaused) return;
+
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+        if (scrollLeft + clientWidth >= scrollWidth - 10) {
+          scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          scroll('right');
+        }
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [loading, reviews.length, isPaused]);
+
   return (
     <section className="py-20 bg-slate-50 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
@@ -128,7 +186,13 @@ export default function GoogleReviews() {
           </div>
 
           {/* Right: Reviews Carousel */}
-          <div className="w-full lg:w-2/3 xl:w-3/4 relative group">
+          <div
+            className="w-full lg:w-2/3 xl:w-3/4 relative group"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onTouchStart={() => setIsPaused(true)}
+            onTouchEnd={() => setTimeout(() => setIsPaused(false), 2000)}
+          >
             {loading ? (
               <div className="flex gap-6 overflow-hidden py-4">
                 {[1, 2, 3].map(i => (

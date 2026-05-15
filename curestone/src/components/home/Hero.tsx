@@ -144,9 +144,38 @@ export default function Hero() {
     // When active approaches end, start crossfade
     const onTimeUpdate = () => {
       if (!active.duration || xfading) return;
-      const remaining = active.duration - active.currentTime;
-      if (remaining <= XFADE_DURATION + 0.1) {
-        doXfade();
+      
+      // If we reach the end of the video, instead of crossfading to the beginning, 
+      // we want to smoothly play the video backwards to the start.
+      // Since HTML5 video doesnt support negative playbackRate reliably across browsers,
+      // we do a smooth ping-pong by manually stepping backwards if playbackRate is reversed.
+      
+      // If playing forward and near end
+      if (active.playbackRate > 0 && active.currentTime >= active.duration - 0.1) {
+         // Pause forward playback
+         active.pause();
+         // Simulate reverse playback by using requestAnimationFrame to step back
+         let lastTime = performance.now();
+         const reversePlay = (now) => {
+             // If we switched videos or user scrolled away, stop
+             if (xfading || active.playbackRate > 0) return; 
+             
+             const dt = (now - lastTime) / 1000; // delta time in seconds
+             lastTime = now;
+             
+             // Step back 
+             active.currentTime = Math.max(0, active.currentTime - dt);
+             
+             // If reached start, play forward again
+             if (active.currentTime <= 0) {
+                 active.playbackRate = 1;
+                 active.play().catch(()=>{});
+                 return;
+             }
+             requestAnimationFrame(reversePlay);
+         };
+         active.playbackRate = -1; // Flag to indicate reverse mode
+         requestAnimationFrame(reversePlay);
       }
     };
 
@@ -466,7 +495,7 @@ export default function Hero() {
                         color: "#fff",
                         textTransform: "uppercase",
                         letterSpacing: "0.04em",
-                        fontSize: "clamp(2.4rem, 8vw, 7.5rem)",
+                        fontSize: "clamp(3.0rem, 10vw, 8.5rem)",
                         textShadow: "0 4px 60px rgba(0,0,0,0.8)",
                         willChange: "transform, opacity",
                         whiteSpace: "nowrap",
@@ -483,7 +512,7 @@ export default function Hero() {
                         color: "#fff",
                         textTransform: "uppercase",
                         letterSpacing: "0.04em",
-                        fontSize: "clamp(1.3rem, 4.2vw, 3.8rem)",
+                        fontSize: "clamp(1.6rem, 5.5vw, 4.8rem)",
                         marginTop: "0.08em",
                         textShadow: "0 2px 30px rgba(0,0,0,0.7)",
                         willChange: "transform, opacity",

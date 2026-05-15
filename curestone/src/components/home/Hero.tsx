@@ -20,7 +20,7 @@ const STAGES = [
     desc: "1st Ever to start Fans-RIRS in North India — By Dr. Deepanshu Gupta.",
   },
   {
-    tag: "98% Success",
+    tag: "",
     line1: "UNMATCHED",
     line2: "SUCCESS RATE",
     desc: "Maintaining a 98% stone-free success rate over 9,000+ Surgeries done.",
@@ -467,9 +467,7 @@ export default function Hero() {
                       willChange: "transform, opacity",
                     }}
                   >
-                    <span style={{ display: "block", width: 24, height: 1, background: "rgba(255,255,255,0.3)" }} />
                     {s.tag}
-                    <span style={{ display: "block", width: 24, height: 1, background: "rgba(255,255,255,0.3)" }} />
                   </span>
 
                   <h1

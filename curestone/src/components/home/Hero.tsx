@@ -1,332 +1,633 @@
 "use client";
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { motion, useScroll, useTransform, useSpring, AnimatePresence, useAnimationFrame } from "framer-motion";
+import React, { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "lenis";
 
-interface Scene {
-  id: number;
-  start: number;
-  end: number;
-  title: string;
-  subtitle: string;
-  badge?: string;
-}
+gsap.registerPlugin(ScrollTrigger);
 
-const SCENES: Scene[] = [
+const STAGES = [
   {
-    id: 1,
-    start: 0,
-    end: 0.15,
-    title: "Welcome to Cure Stone",
-    subtitle: "",
-    badge: "Dr. Deepanshu Gupta"
+    tag: "Dr. Deepanshu Gupta",
+    line1: "WELCOME TO",
+    line2: "CURE STONE",
+    desc: "",
   },
   {
-    id: 2,
-    start: 0.25,
-    end: 0.45,
-    title: "India's Best Kidney Stone Treatment",
-    subtitle: "1st Ever to start Fans-RIRS in North India — By Dr. Deepanshu Gupta.",
-    badge: "Precision Care"
+    tag: "Precision Care",
+    line1: "INDIA'S BEST",
+    line2: "KIDNEY STONE TREATMENT",
+    desc: "1st Ever to start Fans-RIRS in North India — By Dr. Deepanshu Gupta.",
   },
   {
-    id: 3,
-    start: 0.55,
-    end: 0.75,
-    title: "Unmatched Success Rate",
-    subtitle: "Maintaining a 98% stone-free success rate over 30,000+ patient lives.",
-    badge: "98% Success"
+    tag: "98% Success",
+    line1: "UNMATCHED",
+    line2: "SUCCESS RATE",
+    desc: "Maintaining a 98% stone-free success rate over 30,000+ patient lives.",
   },
   {
-    id: 4,
-    start: 0.85,
-    end: 1,
-    title: "Take Control of Your Health",
-    subtitle: "Consult India's leading kidney specialist today at Cure Stone.",
-    badge: "Book Free Consultation "
-  }
+    tag: "Book Free Consultation",
+    line1: "TAKE CONTROL",
+    line2: "OF YOUR HEALTH",
+    desc: "Consult India's leading kidney specialist today at Cure Stone.",
+  },
 ];
 
-const FRAME_COUNT = 120;
+const CENTERS = [0.08, 0.36, 0.64, 0.92];
+const HOLD = 0.055;
+const FADE = 0.07;
 
-export default function ScrollCanvasHero() {
+function calcOpacity(p: number, center: number): number {
+  const dist = Math.abs(p - center);
+  if (dist <= HOLD) return 1;
+  if (dist <= HOLD + FADE) {
+    const t = (dist - HOLD) / FADE;
+    return 1 - t * t;
+  }
+  return 0;
+}
+
+function calcY(p: number, center: number): number {
+  const dist = Math.abs(p - center);
+  const dir = p < center ? 1 : -1;
+  if (dist <= HOLD) return 0;
+  const t = Math.min((dist - HOLD) / FADE, 1);
+  return dir * 36 * (t * t);
+}
+
+const VIDEO_SRC = "/Stone_fragments_floating_in_dark…_202605131342.mp4";
+
+export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [images, setImages] = useState<HTMLImageElement[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState(0);
+  const videoWrapRef = useRef<HTMLDivElement>(null);
+  const vignetteRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
-  // Motion progress
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
+  // Dual video refs for seamless crossfade looping
+  const vidARef = useRef<HTMLVideoElement>(null);
+  const vidBRef = useRef<HTMLVideoElement>(null);
 
-  // Apple-style heavy smooth spring
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 45,
-    damping: 35,
-    restDelta: 0.0001
-  });
-
-  const lastFrameIndex = useRef<number>(-1);
-  const canvasSize = useRef({ width: 0, height: 0 });
-
-  // 1. High-Performance render call
-  const renderFrame = useCallback((prog: number) => {
-    const canvas = canvasRef.current;
-    if (!canvas || images.length < FRAME_COUNT) return;
-
-    // Core optimization: opaque context for better GPU throughput
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    const frameIndex = Math.max(0, Math.min(Math.floor(prog * (FRAME_COUNT - 1)), FRAME_COUNT - 1));
-
-    // Guard: Prevent redundant main-thread calls
-    if (frameIndex === lastFrameIndex.current) return;
-    lastFrameIndex.current = frameIndex;
-
-    const frame = images[frameIndex];
-    if (!frame) return;
-
-    const { width, height } = canvasSize.current;
-    if (width === 0 || height === 0) return;
-
-    // Draw Logic
-    const imgRatio = frame.width / frame.height;
-    const canvasRatio = width / height;
-    let drawWidth, drawHeight, offsetX, offsetY;
-
-    if (imgRatio > canvasRatio) {
-      drawHeight = height;
-      drawWidth = height * imgRatio;
-      offsetX = (width - drawWidth) / 2;
-      offsetY = 0;
-    } else {
-      drawWidth = width;
-      drawHeight = width / imgRatio;
-      offsetX = 0;
-      offsetY = (height - drawHeight) / 2;
-    }
-
-    // High performance draw
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "medium"; // Balanced
-    ctx.drawImage(frame, offsetX, offsetY, drawWidth, drawHeight);
-  }, [images]);
-
-  // 2. Hardware-Accelerated Animation Loop (Decoupled from Scroll)
-  useAnimationFrame(() => {
-    if (isLoaded) {
-      renderFrame(smoothProgress.get());
-    }
-  });
-
-  // 3. Adaptive Canvas Resizer (Capped resolution)
+  // Seamless crossfade loop: when one video nears its end,
+  // the other starts from 0 and fades in, creating an invisible transition
   useEffect(() => {
-    const updateSize = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const rect = canvas.getBoundingClientRect();
+    const vidA = vidARef.current;
+    const vidB = vidBRef.current;
+    if (!vidA || !vidB) return;
 
-      // Performance Cap: Limit pixel density to 1.5x to avoid massive VRAM usage while staying sharp
-      const dpr = Math.min(window.devicePixelRatio, 1.5);
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      canvasSize.current = { width: canvas.width, height: canvas.height };
+    // Mute both for autoplay compliance
+    [vidA, vidB].forEach((v) => {
+      v.muted = true;
+      v.defaultMuted = true;
+    });
 
-      if (isLoaded) renderFrame(smoothProgress.get());
+    const XFADE_TIME = 1.0; // seconds before end to start crossfade
+    const XFADE_DURATION = 0.8; // transition duration in seconds
+
+    let active = vidA;
+    let standby = vidB;
+    let isCrossfading = false;
+    let rafId = 0;
+
+    // Set initial opacity
+    vidA.style.opacity = "1";
+    vidA.style.transition = "";
+    vidB.style.opacity = "0";
+    vidB.style.transition = "";
+
+    const tryPlay = (v: HTMLVideoElement) => {
+      const p = v.play();
+      if (p) p.catch(() => { });
     };
 
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
-  }, [renderFrame, smoothProgress, isLoaded]);
+    const doCrossfade = () => {
+      if (isCrossfading) return;
+      isCrossfading = true;
 
-  // 4. Advanced GPU Pre-Warming (Image pre-decoding)
+      // Prepare standby: start from beginning
+      standby.currentTime = 0;
+      tryPlay(standby);
+
+      // Crossfade via CSS transition
+      const dur = `${XFADE_DURATION}s`;
+      standby.style.transition = `opacity ${dur} ease-in-out`;
+      active.style.transition = `opacity ${dur} ease-in-out`;
+      standby.style.opacity = "1";
+      active.style.opacity = "0";
+
+      // After transition completes, swap roles
+      setTimeout(() => {
+        const prev = active;
+        active = standby;
+        standby = prev;
+
+        // Reset standby
+        standby.pause();
+        standby.currentTime = 0;
+        standby.style.transition = "";
+        standby.style.opacity = "0";
+        active.style.transition = "";
+
+        isCrossfading = false;
+      }, XFADE_DURATION * 1000 + 50);
+    };
+
+    // Monitor loop: check if active video is near its end
+    const monitor = () => {
+      if (!isCrossfading && active.duration && !isNaN(active.duration)) {
+        if (active.currentTime >= active.duration - XFADE_TIME) {
+          doCrossfade();
+        }
+      }
+      rafId = requestAnimationFrame(monitor);
+    };
+
+    // Start playback once metadata is ready
+    const start = () => {
+      vidA.currentTime = 0;
+      tryPlay(vidA);
+      rafId = requestAnimationFrame(monitor);
+    };
+
+    if (vidA.readyState >= 1) {
+      start();
+    } else {
+      vidA.addEventListener("loadedmetadata", start, { once: true });
+    }
+
+    // Safety: if a video somehow hits "ended", force crossfade
+    const onEndedA = () => { if (active === vidA && !isCrossfading) doCrossfade(); };
+    const onEndedB = () => { if (active === vidB && !isCrossfading) doCrossfade(); };
+    vidA.addEventListener("ended", onEndedA);
+    vidB.addEventListener("ended", onEndedB);
+
+    // iOS autoplay unlock
+    const unlock = () => {
+      if (active.paused) tryPlay(active);
+    };
+    document.addEventListener("touchstart", unlock, { once: true });
+    document.addEventListener("click", unlock, { once: true });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      vidA.removeEventListener("ended", onEndedA);
+      vidB.removeEventListener("ended", onEndedB);
+      document.removeEventListener("touchstart", unlock);
+      document.removeEventListener("click", unlock);
+    };
+  }, []);
+
+
+  const tagRefs = useRef<(HTMLSpanElement | null)[]>([null, null, null, null]);
+  const line1Refs = useRef<(HTMLSpanElement | null)[]>([null, null, null, null]);
+  const line2Refs = useRef<(HTMLSpanElement | null)[]>([null, null, null, null]);
+  const descRefs = useRef<(HTMLParagraphElement | null)[]>([null, null, null, null]);
+
+  const qOpacity = useRef<(((v: number) => void) | null)[][]>([[], [], [], []]);
+  const qY = useRef<(((v: number) => void) | null)[][]>([[], [], [], []]);
+
   useEffect(() => {
-    let active = true;
-    const preloadImages = async () => {
-      const loadedImages: HTMLImageElement[] = [];
-      let loaded = 0;
+    window.history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
 
-      const promises = Array.from({ length: FRAME_COUNT }).map((_, i) => {
-        return new Promise<HTMLImageElement>((resolve) => {
-          const img = new Image();
-          const framePath = `/ezgif-213ab7655818cce8-jpg/ezgif-frame-${(i + 1).toString().padStart(3, '0')}.jpg`;
-          img.src = framePath;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const lenis = new Lenis({
+      duration: isIOS ? 1.2 : 1.6,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 0.65,
+      touchMultiplier: isIOS ? 1.2 : 1.8,
+    });
 
-          img.onload = async () => {
-            // "Apple level" optimization: Force GPU decompression before use
-            try {
-              if (img.decode) await img.decode();
-            } catch (e) {
-              console.warn("Decoding failed for frame", i);
-            }
-            loaded++;
-            if (active) setLoadingProgress(Math.round((loaded / FRAME_COUNT) * 100));
-            resolve(img);
-          };
-          loadedImages[i] = img;
+    lenis.on("scroll", ScrollTrigger.update);
+    const ticker = (time: number) => lenis.raf(time * 1000);
+    gsap.ticker.add(ticker);
+    gsap.ticker.lagSmoothing(0);
+
+    const ctx = gsap.context(() => {
+      STAGES.forEach((_, i) => {
+        const els = [
+          tagRefs.current[i],
+          line1Refs.current[i],
+          line2Refs.current[i],
+          descRefs.current[i],
+        ];
+        gsap.set(els, {
+          opacity: i === 0 ? 1 : 0,
+          y: i === 0 ? 0 : 40,
+          filter: i === 0 ? "blur(0px)" : "blur(12px)",
         });
       });
 
-      const allImages = await Promise.all(promises);
-      if (active) {
-        setImages(allImages);
-        setIsLoaded(true);
-      }
-    };
+      const durations = [0.12, 0.18, 0.24, 0.30];
+      STAGES.forEach((_, i) => {
+        const els = [
+          tagRefs.current[i],
+          line1Refs.current[i],
+          line2Refs.current[i],
+          descRefs.current[i],
+        ];
+        qOpacity.current[i] = els.map((el, j) =>
+          el
+            ? gsap.quickTo(el, "opacity", { duration: durations[j], ease: "power2.out" })
+            : null
+        );
+        qY.current[i] = els.map((el, j) =>
+          el
+            ? gsap.quickTo(el, "y", { duration: durations[j] + 0.08, ease: "power2.out" })
+            : null
+        );
+      });
 
-    preloadImages();
-    return () => { active = false; };
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "+=700%",
+        scrub: 1.2,
+        pin: true,
+        anticipatePin: 1,
+        pinSpacing: true,
+        snap: {
+          snapTo: CENTERS,
+          duration: { min: 0.25, max: 0.8 },
+          delay: 0.0,
+          ease: "power2.inOut",
+        },
+        onUpdate(self) {
+          const p = self.progress;
+
+          if (videoWrapRef.current) {
+            gsap.set(videoWrapRef.current, { scale: 1 + 0.06 * p });
+          }
+          if (vignetteRef.current) {
+            gsap.set(vignetteRef.current, { opacity: 0.48 + 0.38 * p });
+          }
+
+          STAGES.forEach((_, i) => {
+            const op = calcOpacity(p, CENTERS[i]);
+            const y = calcY(p, CENTERS[i]);
+            const blurVal = op >= 0.99 ? 0 : 12 * (1 - op);
+            const blurStr = `blur(${blurVal.toFixed(1)}px)`;
+
+            qOpacity.current[i].forEach((fn) => fn?.(op));
+            qY.current[i].forEach((fn) => fn?.(y));
+
+            [
+              tagRefs.current[i],
+              line1Refs.current[i],
+              line2Refs.current[i],
+              descRefs.current[i],
+            ].forEach((el) => {
+              if (el) el.style.filter = blurStr;
+            });
+          });
+        },
+      });
+    }, containerRef);
+
+    return () => {
+      ctx.revert();
+      lenis.destroy();
+      gsap.ticker.remove(ticker);
+    };
   }, []);
 
-  // 5. Active Scene Orchestration
-  const [activeScene, setActiveScene] = useState<Scene | null>(SCENES[0]);
-  useEffect(() => {
-    const unsubscribe = smoothProgress.on("change", (v) => {
-      let current = null;
-      for (const scene of SCENES) {
-        if (v >= scene.start - 0.05 && v <= scene.end + 0.05) {
-          current = scene;
-          break;
-        }
-      }
-      setActiveScene(current);
-    });
-    return () => unsubscribe();
-  }, [smoothProgress]);
+  const videoStyle: React.CSSProperties = {
+    position: "absolute",
+    inset: 0,
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
+    pointerEvents: "none",
+    outline: "none",
+    willChange: "opacity",
+  };
 
   return (
-    <div ref={containerRef} className="relative h-[800vh] bg-slate-950">
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+    <>
+      <style>{`
+        html, body {
+          margin: 0;
+          padding: 0;
+          overflow-x: hidden;
+          background: #000;
+        }
+        video::-webkit-media-controls,
+        video::-webkit-media-controls-panel,
+        video::-webkit-media-controls-start-playback-button,
+        video::-webkit-media-controls-play-button,
+        video::-webkit-media-controls-timeline,
+        video::-webkit-media-controls-current-time-display,
+        video::-webkit-media-controls-fullscreen-button,
+        video::-webkit-media-controls-mute-button,
+        video::-webkit-media-controls-volume-slider,
+        video::-internal-media-controls-download-button {
+          display: none !important;
+          -webkit-appearance: none !important;
+          opacity: 0 !important;
+        }
+        * { -webkit-tap-highlight-color: transparent; }
+        body { overscroll-behavior-y: none; }
+      `}</style>
 
-        {/* Loading Overlay */}
-        {!isLoaded && (
-          <div className="absolute inset-0 z-[60] bg-slate-950 flex flex-col items-center justify-center text-white space-y-6">
-            <div className="relative w-64 h-1.5 bg-white/5 rounded-full overflow-hidden">
-              <motion.div
-                className="absolute inset-y-0 left-0 bg-primary"
-                initial={{ width: 0 }}
-                animate={{ width: `${loadingProgress}%` }}
-                transition={{ type: "spring", stiffness: 50, damping: 15 }}
-              />
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <p className="text-[10px] font-black tracking-[0.3em] uppercase text-primary animate-pulse">
-                Calibrating Digital OT
-              </p>
-              <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest leading-none">
-                Hardware Decryption · {loadingProgress}%
-              </p>
-            </div>
+      <div ref={containerRef} style={{ margin: 0, padding: 0, background: "#000" }}>
+        <section
+          ref={sectionRef}
+          style={{
+            position: "relative",
+            width: "100%",
+            height: "100svh",
+            minHeight: 580,
+            overflow: "hidden",
+            background: "#000",
+            margin: 0,
+            padding: 0,
+          }}
+        >
+          {/* ── Video layer ──────────────────────────────────────── */}
+          <div
+            ref={videoWrapRef}
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 0,
+              transformOrigin: "center center",
+              willChange: "transform",
+              background: "#000",
+              pointerEvents: "none",
+            }}
+          >
+            {/* Video A */}
+            <video
+              ref={vidARef}
+              muted
+              playsInline
+              preload="auto"
+              disablePictureInPicture
+              disableRemotePlayback
+              style={{ ...videoStyle, opacity: 1 }}
+            >
+              <source src={VIDEO_SRC} type="video/mp4" />
+            </video>
+            {/* Video B — used for crossfade */}
+            <video
+              ref={vidBRef}
+              muted
+              playsInline
+              preload="auto"
+              disablePictureInPicture
+              disableRemotePlayback
+              style={{ ...videoStyle, opacity: 0 }}
+            >
+              <source src={VIDEO_SRC} type="video/mp4" />
+            </video>
           </div>
-        )}
 
-        {/* Dynamic Canvas Background */}
-        <div className="absolute inset-0 z-0 bg-slate-950">
-          <canvas
-            ref={canvasRef}
-            className={`w-full h-full object-cover transition-opacity duration-1000 ${isLoaded ? 'opacity-70' : 'opacity-0'}`}
-          />
-          {/* Pro Vignette for Text Contrast */}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-transparent to-slate-950 pointer-events-none opacity-80" />
-          <div className="absolute inset-0 bg-radial-gradient from-transparent to-slate-950/60 pointer-events-none" />
-        </div>
+          {/* ── Overlays ─────────────────────────────────────────── */}
+          <div style={{ position: "absolute", inset: 0, zIndex: 10, pointerEvents: "none" }}>
+            <div
+              ref={vignetteRef}
+              style={{
+                position: "absolute",
+                inset: 0,
+                background:
+                  "radial-gradient(ellipse 90% 90% at 50% 50%, transparent 15%, rgba(0,0,0,0.88) 85%)",
+                opacity: 0.48,
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                inset: "0 0 auto 0",
+                height: 120,
+                background: "linear-gradient(to bottom, rgba(0,0,0,0.75), transparent)",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                inset: "auto 0 0 0",
+                height: 200,
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 55%, transparent 100%)",
+              }}
+            />
+          </div>
 
-        {/* Animated Text Scenes */}
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6 pointer-events-none">
-          <AnimatePresence mode="wait">
-            {activeScene && (
-              <motion.div
-                key={activeScene.id}
-                initial={{ opacity: 0, y: 40, filter: "blur(20px)", scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
-                exit={{ opacity: 0, y: -40, filter: "blur(20px)", scale: 0.9 }}
-                transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-                className="max-w-5xl space-y-8"
-              >
-                {activeScene.badge && (
-                  <motion.span
-                    initial={{ opacity: 0, letterSpacing: "0.5em" }}
-                    animate={{ opacity: 1, letterSpacing: "0.25em" }}
-                    transition={{ delay: 0.4, duration: 1 }}
-                    className="inline-block px-5 py-2 mb-4 text-[11px] font-black text-primary bg-primary/10 border border-primary/20 rounded-full uppercase"
+          {/* ── Text stages ──────────────────────────────────────── */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 20,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              pointerEvents: "none",
+            }}
+          >
+            <div
+              style={{
+                position: "relative",
+                width: "100%",
+                maxWidth: 900,
+                margin: "0 auto",
+                padding: "0 24px",
+                height: "70vh",
+                textAlign: "center",
+              }}
+            >
+              {STAGES.map((s, i) => (
+                <div
+                  key={i}
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "0 24px",
+                  }}
+                >
+                  <span
+                    ref={(el) => { tagRefs.current[i] = el; }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 12,
+                      fontSize: "clamp(9px, 2vw, 11px)",
+                      fontWeight: 900,
+                      letterSpacing: "0.28em",
+                      textTransform: "uppercase",
+                      color: "#fff",
+                      marginBottom: 20,
+                      willChange: "transform, opacity",
+                    }}
                   >
-                    {activeScene.badge}
-                  </motion.span>
-                )}
-                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-white leading-[0.95] tracking-tight [text-wrap:balance]">
-                  {activeScene.title}
-                </h1>
-                <p className="text-base sm:text-xl md:text-2xl text-white/50 font-medium max-w-2xl mx-auto leading-relaxed">
-                  {activeScene.subtitle}
-                </p>
+                    <span style={{ display: "block", width: 24, height: 1, background: "rgba(255,255,255,0.3)" }} />
+                    {s.tag}
+                    <span style={{ display: "block", width: 24, height: 1, background: "rgba(255,255,255,0.3)" }} />
+                  </span>
 
-                {activeScene.id === 4 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8 }}
-                    className="pt-10 pointer-events-auto"
+                  <h1
+                    style={{
+                      margin: 0,
+                      padding: 0,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      lineHeight: 0.85,
+                    }}
                   >
-                    <button
-                      onClick={() => {
-                        const element = document.getElementById('appointment-section');
-                        if (element) {
-                          element.scrollIntoView({ behavior: 'smooth' });
-                        } else {
-                          window.location.href = '/book';
-                        }
+                    <span
+                      ref={(el) => { line1Refs.current[i] = el; }}
+                      style={{
+                        display: "block",
+                        fontWeight: 900,
+                        fontStyle: "normal",
+                        color: "#fff",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.04em",
+                        fontSize: "clamp(3.0rem, 10vw, 8.5rem)",
+                        textShadow: "0 4px 60px rgba(0,0,0,0.8)",
+                        willChange: "transform, opacity",
+                        whiteSpace: "nowrap",
                       }}
-                      className="group relative px-12 py-6 bg-primary text-white font-black rounded-2xl overflow-hidden shadow-2xl transition-all hover:scale-105 active:scale-95"
                     >
-                      <span className="relative z-10">BOOK FREE CONSULTATION →</span>
-                      <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                    </button>
-                  </motion.div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                      {s.line1}
+                    </span>
+                    <span
+                      ref={(el) => { line2Refs.current[i] = el; }}
+                      style={{
+                        display: "block",
+                        fontWeight: 900,
+                        fontStyle: "normal",
+                        color: "#fff",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.04em",
+                        fontSize: "clamp(1.6rem, 5.5vw, 4.8rem)",
+                        marginTop: "0.08em",
+                        textShadow: "0 2px 30px rgba(0,0,0,0.7)",
+                        willChange: "transform, opacity",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {s.line2}
+                    </span>
+                  </h1>
 
-        {/* Minimal Scroll Progression */}
-        <div className="absolute bottom-12 left-12 right-12 flex justify-between items-end">
-          <div className="hidden md:block">
-            <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mb-2">Clinical Protocol</p>
-            <div className="flex gap-2">
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} className={`h-1 w-8 rounded-full transition-all duration-700 ${activeScene?.id === i + 1 ? 'bg-primary w-12' : 'bg-white/10'}`} />
+                  {s.desc ? (
+                    <p
+                      ref={(el) => { descRefs.current[i] = el; }}
+                      style={{
+                        marginTop: 28,
+                        marginBottom: 0,
+                        color: "rgba(255,255,255,0.82)",
+                        fontWeight: 700,
+                        fontStyle: "normal",
+                        lineHeight: 1.65,
+                        maxWidth: 480,
+                        fontSize: "clamp(0.8rem, 1.5vw, 0.98rem)",
+                        willChange: "transform, opacity",
+                      }}
+                    >
+                      {s.desc}
+                    </p>
+                  ) : (
+                    <p
+                      ref={(el) => { descRefs.current[i] = el; }}
+                      style={{ margin: 0, height: 0, overflow: "hidden" }}
+                    />
+                  )}
+                </div>
               ))}
             </div>
           </div>
 
-          <div className="flex flex-col items-center gap-4">
-            <motion.div
-              animate={{ opacity: [0.2, 0.5, 0.2] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="text-[9px] font-black text-white/40 uppercase tracking-[0.5em] mb-2 vertical-text"
+          {/* ── CTA Button ───────────────────────────────────────── */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "clamp(56px, 8vh, 80px)",
+              left: 0,
+              right: 0,
+              zIndex: 30,
+              display: "flex",
+              justifyContent: "center",
+              padding: "0 24px",
+            }}
+          >
+            <button
+              onClick={() => {
+                document
+                  .getElementById("appointment-section")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
+              style={{
+                padding: "14px 36px",
+                background: "#fff",
+                color: "#000",
+                border: "none",
+                borderRadius: 999,
+                fontSize: 11,
+                fontWeight: 900,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                cursor: "pointer",
+                boxShadow: "0 0 30px rgba(255,255,255,0.12)",
+                transition: "background 0.25s, transform 0.15s",
+                WebkitTapHighlightColor: "transparent",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.88)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
+              onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
+              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              onTouchStart={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
+              onTouchEnd={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
-              Discover
-            </motion.div>
-            <div className="w-[2px] h-20 bg-white/5 rounded-full relative overflow-hidden">
-              <motion.div
-                className="absolute top-0 w-full bg-primary/60 origin-top"
-                style={{ height: "100%", scaleY: smoothProgress }}
-              />
-            </div>
+              Book Appointment →
+            </button>
           </div>
-        </div>
-      </div>
 
-      <style jsx>{`
-        .vertical-text {
-          writing-mode: vertical-rl;
-          text-orientation: mixed;
-        }
-      `}</style>
-    </div>
+          {/* ── Scroll hint ──────────────────────────────────────── */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 14,
+              left: 0,
+              right: 0,
+              zIndex: 30,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 6,
+              pointerEvents: "none",
+            }}
+          >
+            <span
+              style={{
+                fontSize: 8,
+                letterSpacing: "0.5em",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,0.55)",
+                fontWeight: 900,
+              }}
+            >
+              Scroll
+            </span>
+            <div
+              style={{
+                width: 1,
+                height: 28,
+                background: "linear-gradient(to bottom, rgba(255,255,255,0.35), transparent)",
+              }}
+            />
+          </div>
+        </section>
+      </div>
+    </>
   );
 }

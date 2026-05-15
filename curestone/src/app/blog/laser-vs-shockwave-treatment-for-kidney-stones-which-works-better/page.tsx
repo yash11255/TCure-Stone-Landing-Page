@@ -84,10 +84,10 @@ export default function BlogPage() {
         .editorial-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%); }
       `}} />
 
-      
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-        <Navbar />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <Navbar />
 
       <main className="flex-grow pt-20">
 
@@ -115,34 +115,34 @@ export default function BlogPage() {
           </div>
         </section>
 
-        
-          {/* Featured Image */}
-          <div className="max-w-4xl mx-auto px-8 mb-12">
-            <img
-              src="/blogs/laser-vs-shockwave-treatment-for-kidney-stones-which-works-better.png"
-              alt="Laser vs shockwave treatment for kidney stones – Which works better?"
-              className="w-full rounded-3xl object-cover max-h-[480px]"
-            />
-          </div>
+
+        {/* Featured Image */}
+        <div className="max-w-4xl mx-auto px-8 mb-12">
+          <img
+            src="/blogs/laser-vs-shockwave-treatment-for-kidney-stones-which-works-better.png"
+            alt="Laser vs shockwave treatment for kidney stones – Which works better?"
+            className="w-full rounded-3xl object-cover max-h-[480px]"
+          />
+        </div>
 
         {/* Article Content */}
         <article className="max-w-4xl mx-auto px-8 pb-24">
           <div className="prose prose-slate max-w-none">
-            
-              <p className="text-slate-600 leading-relaxed mb-6">Kidney stones are hard, tiny particles that may develop in your kidneys. Sometimes kidney stones remain silent and cause no discomfort, but in other cases they can trigger severe pain, difficulty passing urine or even nausea.</p>
-              <p className="text-slate-600 leading-relaxed mb-6">If you have a kidney stone, you might have heard about Laser treatment (RIRS) and Shockwave therapy (ESWL). Both are new treatments that can take out stones without big surgery. But which is best for you? In this blog, we will provide full information regarding this question</p>
-              <p className="text-slate-600 leading-relaxed mb-6">This treatment for kidney stones is known as RIRS. The minimally invasive procedure uses a flexible scope with a laser and does not require any cuts to the body.</p>
-              <h2 className="text-2xl font-bold text-blue-900 mb-4 mt-10">Laser Treatment for Kidney Stones (RIRS)</h2>
-              <p className="text-slate-600 leading-relaxed mb-6">Shockwave therapy is called ESWL. It is a completely non-surgical treatment where kidney stones are broken into small pieces using strong sound waves.</p>
-              <p className="text-slate-600 leading-relaxed mb-6">Pros: Laser treatment is very effective especially when treating large or hard stones. This procedure is highly effective and usually removes the stones in a single session. The procedure is minimally invasive and it’s done through the urinary system. There are no large cuts. This tool is suitable for all sizes and types of stones. It’s a good choice for complicated cases.</p>
-              <p className="text-slate-600 leading-relaxed mb-6">Cons: Laser treatment requires anesthesia which may not be suitable for everyone. A short hospital stay of 1–2 days is usually needed. Sometimes a temporary stent is placed to help urine flow which can cause mild discomfort. Overall the cost is slightly higher compared to Shockwave therapy.</p>
-              <h2 className="text-2xl font-bold text-blue-900 mb-4 mt-10">Step by Step Process</h2>
-              <p className="text-slate-600 leading-relaxed mb-6">Pros: The treatment is non-invasive  and it can be done as an outpatient procedure. Patients are then able to return home the same day. The initial recovery period after the procedure is brief and relatively painless. It is a good choice for patients with small or soft stones and those who prefer a less invasive procedure.</p>
-              <p className="text-slate-600 leading-relaxed mb-6">Cons : Shockwave therapy works best only for small stones and may not be effective for larger or very hard stones. Some patients may require 2–3 sessions to fully break the stone. Passing the stone fragments afterward can cause discomfort and the overall success rate is slightly lower 70–80% compared to Laser treatment.</p>
-              <p className="text-slate-600 leading-relaxed mb-6">ESWL is painless during the procedure, but fragments that pass later can hurt. RIRS is done under anesthesia, so you don’t feel pain during the procedure.</p>
-              <p className="text-slate-600 leading-relaxed mb-6">Yes, but doctors usually prefer ESWL for children.</p>
-              <p className="text-slate-600 leading-relaxed mb-6">Yes, stones can return if lifestyle and diet are not managed.</p>
-              <p className="text-slate-600 leading-relaxed mb-6">The effectiveness of both Laser (RIRS) and Shockwaves (ESWL) depends on the size and type of the kidney stone, as well as the health and condition of the patient. Shockwave (ESWL), a non-surgical outpatient treatment, is best for small stones. Laser (RIRS:) Best for large or difficult stones. Higher chances of clearing them in one go.</p>
+
+            <p className="text-slate-600 leading-relaxed mb-6">Kidney stones are hard, tiny particles that may develop in your kidneys. Sometimes kidney stones remain silent and cause no discomfort, but in other cases they can trigger severe pain, difficulty passing urine or even nausea.</p>
+            <p className="text-slate-600 leading-relaxed mb-6">If you have a kidney stone, you might have heard about Laser treatment (RIRS) and Shockwave therapy (ESWL). Both are new treatments that can take out stones without big surgery. But which is best for you? In this blog, we will provide full information regarding this question</p>
+            <p className="text-slate-600 leading-relaxed mb-6">This treatment for kidney stones is known as RIRS. The minimally invasive procedure uses a flexible scope with a laser and does not require any cuts to the body.</p>
+            <h2 className="text-2xl font-bold text-blue-900 mb-4 mt-10">Laser Treatment for Kidney Stones (RIRS)</h2>
+            <p className="text-slate-600 leading-relaxed mb-6">Shockwave therapy is called ESWL. It is a completely non-surgical treatment where kidney stones are broken into small pieces using strong sound waves.</p>
+            <p className="text-slate-600 leading-relaxed mb-6">Pros: Laser treatment is very effective especially when treating large or hard stones. This procedure is highly effective and usually removes the stones in a single session. The procedure is minimally invasive and it’s done through the urinary system. There are no large cuts. This tool is suitable for all sizes and types of stones. It’s a good choice for complicated cases.</p>
+            <p className="text-slate-600 leading-relaxed mb-6">Cons: Laser treatment requires anesthesia which may not be suitable for everyone. A short hospital stay of 1–2 days is usually needed. Sometimes a temporary stent is placed to help urine flow which can cause mild discomfort. Overall the cost is slightly higher compared to Shockwave therapy.</p>
+            <h2 className="text-2xl font-bold text-blue-900 mb-4 mt-10">Step by Step Process</h2>
+            <p className="text-slate-600 leading-relaxed mb-6">Pros: The treatment is non-invasive  and it can be done as an outpatient procedure. Patients are then able to return home within 24 Hours. The initial recovery period after the procedure is brief and relatively painless. It is a good choice for patients with small or soft stones and those who prefer a less invasive procedure.</p>
+            <p className="text-slate-600 leading-relaxed mb-6">Cons : Shockwave therapy works best only for small stones and may not be effective for larger or very hard stones. Some patients may require 2–3 sessions to fully break the stone. Passing the stone fragments afterward can cause discomfort and the overall success rate is slightly lower 70–80% compared to Laser treatment.</p>
+            <p className="text-slate-600 leading-relaxed mb-6">ESWL is painless during the procedure, but fragments that pass later can hurt. RIRS is done under anesthesia, so you don’t feel pain during the procedure.</p>
+            <p className="text-slate-600 leading-relaxed mb-6">Yes, but doctors usually prefer ESWL for children.</p>
+            <p className="text-slate-600 leading-relaxed mb-6">Yes, stones can return if lifestyle and diet are not managed.</p>
+            <p className="text-slate-600 leading-relaxed mb-6">The effectiveness of both Laser (RIRS) and Shockwaves (ESWL) depends on the size and type of the kidney stone, as well as the health and condition of the patient. Shockwave (ESWL), a non-surgical outpatient treatment, is best for small stones. Laser (RIRS:) Best for large or difficult stones. Higher chances of clearing them in one go.</p>
           </div>
 
           {/* CTA */}

@@ -17,7 +17,7 @@ const INDIAN_STATES = [
 const SCRIPT_URL = process.env.NEXT_PUBLIC_APPOINTMENT_FORM_SHEET_URL || "https://script.google.com/macros/s/AKfycbznh1P-N_hf16qop9l3squGsuPrf4nj03pVuWeYawZsdB8DBC1Oct-1SNX6KAZBHyVy8w/exec";
 
 const faqs = [
-  { q: "How soon will I get a confirmation?", a: "Our coordinator calls within 15 minutes of form submission during clinic hours (9 AM – 8 PM)." },
+  { q: "How soon will I get a confirmation?", a: "Our coordinator calls within 15 minutes of form submission during clinic hours (10 AM – 7 PM On Appoinment)." },
   { q: "Is the consultation free?", a: "The first online video consultation is free. In-clinic consultations start at ₹800." },
   { q: "Do I need to carry any reports?", a: "If you have existing ultrasound, CT KUB or blood reports, please carry them. It helps our team assess your case faster." },
   { q: "Can I book for a family member?", a: "Yes. Just fill in the patient's details in the form. You can also contact us directly via WhatsApp." },
@@ -162,7 +162,7 @@ export default function BookPage() {
                   <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center group-hover:bg-primary transition-colors shrink-0">
                     <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
                   </div>
-                  <div><p className="font-black text-white text-lg">+91 88002 63884</p><p className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Available 9 AM – 8 PM</p></div>
+                  <div><p className="font-black text-white text-lg">+91 88002 63884</p><p className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Available 10 AM – 7 PM On Appoinment</p></div>
                 </a>
                 <a href="https://wa.me/918800263884" target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors text-sm uppercase tracking-wide">
                   WhatsApp Now
@@ -192,7 +192,7 @@ export default function BookPage() {
               {/* Features Card */}
               <div className="bg-primary/5 border border-primary/10 p-8 rounded-3xl space-y-4">
                 <p className="text-[10px] font-black uppercase tracking-widest text-primary">Why Cure Stone</p>
-                {["98% Stone-Free Rate", "15,000+ Successful Surgeries", "Zero Radiation RIRS", "International Patients Welcome"].map((item, i) => (
+                {["98% Stone-Free Rate", "9000+ Successful Surgeries", "Zero Radiation RIRS", "International Patients Welcome"].map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                       <svg className="w-3 h-3 text-primary" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>

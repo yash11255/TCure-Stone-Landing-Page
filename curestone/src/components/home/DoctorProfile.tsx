@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 const DoctorProfile = () => {
   const stats = [
-    { label: "Patients Treated", value: "10K+", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
+    { label: "Patients Treated", value: "9K+", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
     { label: "Publications", value: "200+", icon: BookOpen, color: "text-indigo-600", bg: "bg-indigo-50" },
     { label: "Awards Won", value: "22+", icon: Trophy, color: "text-amber-500", bg: "bg-amber-50" },
     { label: "Years Experience", value: "15+", icon: History, color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -119,15 +119,7 @@ const DoctorProfile = () => {
               </div>
 
               {/* Floatings Tags */}
-              <div className="absolute -top-4 -right-2 sm:-top-6 sm:-right-6 bg-white p-3 sm:p-4 rounded-2xl sm:rounded-3xl shadow-xl flex items-center gap-2 sm:gap-3 border border-blue-50 animate-bounce-slow">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-green-500">
-                  <CheckCircle2 size={18} className="sm:w-5 sm:h-5" />
-                </div>
-                <div>
-                  <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Status</p>
-                  <p className="text-[11px] sm:text-xs font-bold text-slate-900 mt-1">Accepting Patients</p>
-                </div>
-              </div>
+
             </div>
 
             {/* Quick Contact Card */}

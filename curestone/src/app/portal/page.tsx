@@ -54,7 +54,7 @@ export default function PortalPage() {
           <div className="max-w-md w-full mx-auto px-6">
             <div className="text-center mb-10">
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
               </div>
               <h1 className="text-3xl font-black text-slate-900 mb-2">Patient Portal</h1>
               <p className="text-slate-500 font-medium">Access your reports, appointments and treatment history securely.</p>
@@ -67,7 +67,7 @@ export default function PortalPage() {
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Registered Mobile Number</label>
                     <div className="relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">+91</span>
-                      <input value={phone} onChange={e => setPhone(e.target.value)} type="tel" maxLength={10} required placeholder="XXXXX XXXXX" className="w-full pl-14 pr-5 py-3.5 bg-white border border-slate-100 rounded-xl outline-none focus:border-primary transition-all text-slate-900 font-medium"/>
+                      <input value={phone} onChange={e => setPhone(e.target.value)} type="tel" maxLength={10} required placeholder="XXXXX XXXXX" className="w-full pl-14 pr-5 py-3.5 bg-white border border-slate-100 rounded-xl outline-none focus:border-primary transition-all text-slate-900 font-medium" />
                     </div>
                   </div>
                   <button type="submit" className="w-full py-4 bg-primary text-white font-black rounded-xl shadow-xl shadow-primary/20 hover:bg-primary-dark transition-all uppercase tracking-wide text-sm">
@@ -79,14 +79,14 @@ export default function PortalPage() {
                 <form onSubmit={handleVerify} className="space-y-5">
                   <div className="text-center mb-4">
                     <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                      <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 12l2 2 4-4"/></svg>
+                      <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 12l2 2 4-4" /></svg>
                     </div>
                     <p className="text-sm font-bold text-slate-700">OTP sent to +91 {phone}</p>
                     <button type="button" onClick={() => setOtpSent(false)} className="text-xs text-primary font-bold mt-1 hover:underline">Change number</button>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Enter 4-Digit OTP</label>
-                    <input value={otp} onChange={e => setOtp(e.target.value)} type="text" maxLength={4} required placeholder="• • • •" className="w-full px-5 py-4 bg-white border border-slate-100 rounded-xl outline-none focus:border-primary transition-all text-slate-900 font-black text-xl tracking-[1rem] text-center"/>
+                    <input value={otp} onChange={e => setOtp(e.target.value)} type="text" maxLength={4} required placeholder="• • • •" className="w-full px-5 py-4 bg-white border border-slate-100 rounded-xl outline-none focus:border-primary transition-all text-slate-900 font-black text-xl tracking-[1rem] text-center" />
                   </div>
                   <button type="submit" className="w-full py-4 bg-primary text-white font-black rounded-xl shadow-xl shadow-primary/20 hover:bg-primary-dark transition-all uppercase tracking-wide text-sm">
                     Verify &amp; Login
@@ -196,7 +196,7 @@ export default function PortalPage() {
                             <p className="font-bold text-xs text-slate-900 truncate">{r.name}</p>
                             <p className="text-[10px] text-slate-400 font-medium">{r.date}</p>
                           </div>
-                          <svg className="w-4 h-4 text-slate-300 group-hover:text-primary shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                          <svg className="w-4 h-4 text-slate-300 group-hover:text-primary shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
                         </div>
                       ))}
                     </div>
@@ -207,9 +207,9 @@ export default function PortalPage() {
                     <h3 className="font-black text-slate-900 mb-1 text-base">💡 Doctor&apos;s Advice</h3>
                     <p className="text-xs text-slate-500 font-medium mb-4">Last updated: March 24, 2025</p>
                     <ul className="space-y-2">
-                      {["Drink at least 3 litres of water daily","Avoid spinach, nuts and cola drinks","No heavy lifting for 2 more weeks","Resume light walking from tomorrow"].map((tip, i) => (
+                      {["Drink at least 3 litres of water daily", "Avoid spinach, nuts and cola drinks", "No heavy lifting for 2 more weeks", "Resume light walking from tomorrow"].map((tip, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm font-medium text-slate-700">
-                          <svg className="w-4 h-4 text-primary shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                          <svg className="w-4 h-4 text-primary shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                           {tip}
                         </li>
                       ))}
@@ -249,7 +249,7 @@ export default function PortalPage() {
                 {timeline.map((item, i) => (
                   <div key={i} className="relative">
                     <div className={`absolute -left-[2.35rem] w-5 h-5 rounded-full border-2 flex items-center justify-center ${item.status === "done" ? "bg-green-500 border-green-500" : item.status === "upcoming" ? "bg-primary border-primary" : "bg-white border-slate-300"}`}>
-                      {item.status === "done" && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>}
+                      {item.status === "done" && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
                       {item.status === "upcoming" && <span className="w-2 h-2 rounded-full bg-white" />}
                     </div>
                     <div className="bg-white border border-border/30 rounded-2xl p-5 shadow-sm">
@@ -270,9 +270,9 @@ export default function PortalPage() {
               <div className="bg-white border border-border/50 rounded-2xl shadow-sm p-12 text-center">
                 <span className="text-5xl mb-4 block">💬</span>
                 <h3 className="text-xl font-black text-slate-900 mb-2">Secure Messaging</h3>
-                <p className="text-slate-500 font-medium max-w-sm mx-auto mb-6">Direct messaging with Dr. Kalla&apos;s team is available for post-operative patients. Contact our coordinator to enable this feature.</p>
+                <p className="text-slate-500 font-medium max-w-sm mx-auto mb-6">Direct messaging with Dr. Deepanshu Gupta&apos;s team is available for post-operative patients. Contact our coordinator to enable this feature.</p>
                 <a href="https://wa.me/918800263884" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-black rounded-xl transition-colors text-sm">
-                  WhatsApp Dr. Kalla&apos;s Team
+                  WhatsApp Dr. Deepanshu Gupta&apos;s Team
                 </a>
               </div>
             )}

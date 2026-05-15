@@ -14,7 +14,7 @@ const steps = [
   { num: "03", title: "Scope Insertion", desc: "A rigid or semi-rigid ureteroscope is gently passed through natural pathways." },
   { num: "04", title: "Laser Pulsing", desc: "High-power laser energy pulses are used to fragment the stone instantly." },
   { num: "05", title: "Clearance", desc: "Small stone fragments are either removed with a basket or flushed out." },
-  { num: "06", title: "Recovery", desc: "Most patients are mobile within hours and discharged within the same day." },
+  { num: "06", title: "Recovery", desc: "Most patients are mobile within hours and discharged within 24 Hours." },
 ];
 
 const tableData = [
@@ -74,7 +74,7 @@ export default function URSLPage() {
       {/* Stats Bar */}
       <div className="bg-primary py-8 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
-          {[["95%+", "Success Rate"], ["24 Hrs", "Typical Stay"], ["0", "Incisions"], ["10,000+", "Lives Touched"]].map(([val, lab], i) => (
+          {[["95%+", "Success Rate"], ["24 Hrs", "Typical Stay"], ["0", "Incisions"], ["9000+", "Surgeries Done"]].map(([val, lab], i) => (
             <div key={i}>
               <p className="text-3xl md:text-4xl font-black tracking-tight">{val}</p>
               <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-white/60 mt-2">{lab}</p>
@@ -196,7 +196,7 @@ export default function URSLPage() {
             </div>
             <div className="grid md:grid-cols-4 gap-6">
               {[
-                { day: "Day 0", title: "Discharge", desc: "Return home on the same day feeling relieved." },
+                { day: "Day 0", title: "Discharge", desc: "Return home within 24 hours feeling relieved." },
                 { day: "Day 1-3", title: "Resumption", desc: "Light activity resumed with minimal discomfort." },
                 { day: "Week 1", title: "Healing", desc: "Body adjusts to the temporary DJ stent." },
                 { day: "Week 2", title: "Freedom", desc: "Stent removed; complete freedom from pain." },

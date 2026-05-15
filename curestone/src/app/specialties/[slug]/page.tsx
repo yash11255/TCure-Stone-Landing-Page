@@ -35,8 +35,12 @@ export default function SpecialtyPage() {
                   Gold Standard Treatment
                 </span>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.1] mb-6">
-                  {service.name.split(' ').map((word, i) => (
-                    <span key={i} className={`${i === 0 ? "text-primary italic" : "text-slate-900"} inline-block mr-2`}>
+                  {service.name.split(' ').map((word, i, arr) => (
+                    <span
+                      key={i}
+                      className={i === 0 ? "text-primary italic" : "text-slate-900"}
+                      style={{ marginRight: i < arr.length - 1 ? '0.25em' : 0 }}
+                    >
                       {word}
                     </span>
                   ))}
@@ -125,7 +129,6 @@ export default function SpecialtyPage() {
                     {service.treatments.map((treatment, i) => (
                       <div key={i} className="flex justify-between items-center p-4 md:p-5 bg-white/5 border border-white/10 rounded-xl hover:bg-primary/20 transition-all cursor-pointer group">
                         <span className="font-bold text-sm md:text-base">{treatment}</span>
-                        <span className="group-hover:translate-x-1 transition-transform">→</span>
                       </div>
                     ))}
                   </div>

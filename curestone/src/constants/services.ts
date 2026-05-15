@@ -23,8 +23,8 @@ export const SERVICES: ServiceDetail[] = [
     treatments: ["RIRS Laser Surgery", "ESWL Lithotripsy", "URSL (Ureteroscopy)", "Mini-PCNL"],
     stats: [
       { label: "Success Rate", value: "98%" },
-      { label: "Procedures", value: "15,000+" },
-      { label: "Recovery", value: "24-48 Hrs" }
+      { label: "Procedures", value: "9,000+" },
+      { label: "Recovery", value: "24 Hrs" }
     ],
     features: [
       "Zero Radiation (FANS-RIRS)",
@@ -62,8 +62,8 @@ export const SERVICES: ServiceDetail[] = [
     fullDesc: "Dedicated care for all urological conditions and male reproductive health. Our team specializes in precision diagnosis and treatment of prostate enlargement (BPH), recurrent UTIs, and male fertility concerns using the latest medical protocols.",
     treatments: ["BPH Treatment (HoLEP/TURP)", "Prostate Screening", "Male Infertility Care", "UTI Management"],
     stats: [
-      { label: "Expert Doctors", value: "20+ Yrs Exp" },
-      { label: "Patient Trust", value: "50,000+" },
+      { label: "Expert Doctors", value: "15+ Yrs Exp" },
+      { label: "Patient Trust", value: "30,000+" },
       { label: "Diagnostics", value: "In-house" }
     ],
     features: [
@@ -101,7 +101,7 @@ export const SERVICES: ServiceDetail[] = [
     treatments: ["Laparoscopic Cholecystectomy", "Diagnostic Ultrasound", "Post-op Nutrition Plan", "Single-port Surgery Options"],
     stats: [
       { label: "Surgery Time", value: "45-60 Mins" },
-      { label: "Discharge", value: "Same Day" },
+      { label: "Discharge", value: "Within 24 Hours" },
       { label: "Safety", value: "Gold Standard" }
     ],
     features: [

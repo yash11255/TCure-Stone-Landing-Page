@@ -49,8 +49,6 @@ const Footer = () => {
       links: [
         { label: "CureStone AI", href: "/checker" },
         { label: "Book Free Consultation", href: "/book" },
-        { label: "Health Blog", href: "/blog" },
-        { label: "Sitemap", href: "/sitemap.xml" },
       ],
     },
   ];
@@ -118,9 +116,7 @@ const Footer = () => {
 
           {/* Locations */}
           <div className="flex flex-col gap-6">
-            <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-[0.25em]">
-              Areas Served
-            </h4>
+
             <div className="grid grid-cols-2 gap-x-4 gap-y-2">
               {locationLinks.map((link, lIdx) => (
                 <Link
@@ -153,13 +149,13 @@ const Footer = () => {
           <div className="space-y-6">
             <div>
               <h4 className="text-primary text-sm font-bold uppercase tracking-widest mb-2">Visit Our Hospital</h4>
-              <p className="text-xl font-medium text-white/90">number 164 P &165 P, Sector 52, Near Plot, 3, Rd No D-13 A, Ardee City, Gurugram, Haryana 122003</p>
+              <p className="text-xl font-medium text-white/90"> Cure Stone</p>
               <p className="text-white/50 text-sm mt-1">Sector 52, Near Plot, 3, Rd No D-13 A, Ardee City, Gurugram, Haryana 122003</p>
             </div>
             <div className="flex flex-wrap gap-8">
               <div>
                 <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Consultation Hours</p>
-                <p className="text-sm text-white/70 font-medium">9:00 AM – 8:00 PM</p>
+                <p className="text-sm text-white/70 font-medium">10:00 AM – 7:00 PM On Appoiment</p>
               </div>
               <div>
                 <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Emergency Service</p>
@@ -186,7 +182,7 @@ const Footer = () => {
             © 2026 CureStone Hospital. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            {['Privacy', 'Terms', 'Sitemap', 'Robots'].map((item) => (
+            {['Privacy', 'Terms'].map((item) => (
               <Link
                 key={item}
                 href={`/${item.toLowerCase()}`}

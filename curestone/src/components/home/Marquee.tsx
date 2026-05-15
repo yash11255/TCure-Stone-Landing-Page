@@ -3,7 +3,7 @@ import React from 'react';
 
 const Marquee = () => {
   const items = [
-    "98% Stone-Free Success Rate",
+    "9000+ Surgeries Done",
     "30,000+ Happy Patients",
     "No Cuts · No Scars · No Radiation",
     "India's Best Kidney Stone Treatment",

@@ -76,7 +76,7 @@ export default function RIRSPage() {
       {/* Stats Bar */}
       <div className="bg-primary py-6 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
-          {[["98%", "Stone-Free Rate"], ["24 Hrs", "Average Discharge"], ["0", "Incisions / Cuts"], ["15,000+", "Procedures Done"]].map(([val, lab], i) => (
+          {[["98%", "Stone-Free Rate"], ["24 Hrs", "Average Discharge"], ["0", "Incisions / Cuts"], ["9000+", "Procedures Done"]].map(([val, lab], i) => (
             <div key={i}>
               <p className="text-3xl font-black">{val}</p>
               <p className="text-xs font-bold uppercase tracking-widest text-white/70 mt-1">{lab}</p>
@@ -202,7 +202,7 @@ export default function RIRSPage() {
             <Link href="/book" className="inline-flex items-center gap-2 px-8 md:px-10 py-4 md:py-5 bg-white text-primary font-black rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all text-base md:text-lg">
               Book Free RIRS Consultation →
             </Link>
-            <p className="text-white/40 text-[10px] md:text-xs font-bold uppercase tracking-widest mt-6">+91 88002 63884 · Available 9 AM – 8 PM</p>
+            <p className="text-white/40 text-[10px] md:text-xs font-bold uppercase tracking-widest mt-6">+91 88002 63884 · Available 10 AM – 7 PM On Appoinment</p>
           </div>
         </section>
       </main>

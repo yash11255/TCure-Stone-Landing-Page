@@ -56,18 +56,126 @@ function calcY(p: number, center: number): number {
 }
 
 const VIDEO_SRC = "/Stone_fragments_floating_in_dark…_202605131342.mp4";
-// Crossfade duration in seconds — how long the two videos overlap
-const XFADE_DURATION = 1.2;
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const sectionRef = useRef<HTMLElement>(null);
-
-  // Two video elements for seamless crossfade loop
-  const videoA = useRef<HTMLVideoElement>(null);
-  const videoB = useRef<HTMLVideoElement>(null);
   const videoWrapRef = useRef<HTMLDivElement>(null);
   const vignetteRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Dual video refs for seamless crossfade looping
+  const vidARef = useRef<HTMLVideoElement>(null);
+  const vidBRef = useRef<HTMLVideoElement>(null);
+
+  // Seamless crossfade loop: when one video nears its end,
+  // the other starts from 0 and fades in, creating an invisible transition
+  useEffect(() => {
+    const vidA = vidARef.current;
+    const vidB = vidBRef.current;
+    if (!vidA || !vidB) return;
+
+    // Mute both for autoplay compliance
+    [vidA, vidB].forEach((v) => {
+      v.muted = true;
+      v.defaultMuted = true;
+    });
+
+    const XFADE_TIME = 1.0; // seconds before end to start crossfade
+    const XFADE_DURATION = 0.8; // transition duration in seconds
+
+    let active = vidA;
+    let standby = vidB;
+    let isCrossfading = false;
+    let rafId = 0;
+
+    // Set initial opacity
+    vidA.style.opacity = "1";
+    vidA.style.transition = "";
+    vidB.style.opacity = "0";
+    vidB.style.transition = "";
+
+    const tryPlay = (v: HTMLVideoElement) => {
+      const p = v.play();
+      if (p) p.catch(() => { });
+    };
+
+    const doCrossfade = () => {
+      if (isCrossfading) return;
+      isCrossfading = true;
+
+      // Prepare standby: start from beginning
+      standby.currentTime = 0;
+      tryPlay(standby);
+
+      // Crossfade via CSS transition
+      const dur = `${XFADE_DURATION}s`;
+      standby.style.transition = `opacity ${dur} ease-in-out`;
+      active.style.transition = `opacity ${dur} ease-in-out`;
+      standby.style.opacity = "1";
+      active.style.opacity = "0";
+
+      // After transition completes, swap roles
+      setTimeout(() => {
+        const prev = active;
+        active = standby;
+        standby = prev;
+
+        // Reset standby
+        standby.pause();
+        standby.currentTime = 0;
+        standby.style.transition = "";
+        standby.style.opacity = "0";
+        active.style.transition = "";
+
+        isCrossfading = false;
+      }, XFADE_DURATION * 1000 + 50);
+    };
+
+    // Monitor loop: check if active video is near its end
+    const monitor = () => {
+      if (!isCrossfading && active.duration && !isNaN(active.duration)) {
+        if (active.currentTime >= active.duration - XFADE_TIME) {
+          doCrossfade();
+        }
+      }
+      rafId = requestAnimationFrame(monitor);
+    };
+
+    // Start playback once metadata is ready
+    const start = () => {
+      vidA.currentTime = 0;
+      tryPlay(vidA);
+      rafId = requestAnimationFrame(monitor);
+    };
+
+    if (vidA.readyState >= 1) {
+      start();
+    } else {
+      vidA.addEventListener("loadedmetadata", start, { once: true });
+    }
+
+    // Safety: if a video somehow hits "ended", force crossfade
+    const onEndedA = () => { if (active === vidA && !isCrossfading) doCrossfade(); };
+    const onEndedB = () => { if (active === vidB && !isCrossfading) doCrossfade(); };
+    vidA.addEventListener("ended", onEndedA);
+    vidB.addEventListener("ended", onEndedB);
+
+    // iOS autoplay unlock
+    const unlock = () => {
+      if (active.paused) tryPlay(active);
+    };
+    document.addEventListener("touchstart", unlock, { once: true });
+    document.addEventListener("click", unlock, { once: true });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      vidA.removeEventListener("ended", onEndedA);
+      vidB.removeEventListener("ended", onEndedB);
+      document.removeEventListener("touchstart", unlock);
+      document.removeEventListener("click", unlock);
+    };
+  }, []);
+
 
   const tagRefs = useRef<(HTMLSpanElement | null)[]>([null, null, null, null]);
   const line1Refs = useRef<(HTMLSpanElement | null)[]>([null, null, null, null]);
@@ -81,126 +189,6 @@ export default function Hero() {
     window.history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
 
-    // ── Crossfade video loop setup ─────────────────────────────────────
-    const a = videoA.current!;
-    const b = videoB.current!;
-
-    [a, b].forEach((v) => {
-      v.defaultMuted = true;
-      v.muted = true;
-      v.setAttribute("muted", "");
-      v.setAttribute("playsinline", "");
-    });
-
-    let active = a;
-    let standby = b;
-    let xfading = false;
-
-    // Preload standby, then kick off active
-    const startPlayback = () => {
-      // Start active immediately
-      active.currentTime = 0;
-      const p = active.play();
-      if (p) p.catch(() => { });
-
-      // Standby: load quietly
-      standby.currentTime = 0;
-      standby.style.opacity = "0";
-    };
-
-    const doXfade = () => {
-      if (xfading) return;
-      xfading = true;
-
-      // Prepare standby from start
-      standby.currentTime = 0;
-      const sp = standby.play();
-      if (sp) sp.catch(() => { });
-      standby.style.opacity = "0";
-
-      // Crossfade using GSAP
-      gsap.to(standby, {
-        opacity: 1,
-        duration: XFADE_DURATION,
-        ease: "none",
-        onComplete: () => {
-          // Pause & reset old active
-          active.pause();
-          active.currentTime = 0;
-          active.style.opacity = "1"; // reset for next time
-
-          // Swap roles
-          [active, standby] = [standby, active];
-          xfading = false;
-        },
-      });
-      gsap.to(active, {
-        opacity: 0,
-        duration: XFADE_DURATION,
-        ease: "none",
-      });
-    };
-
-    // When active approaches end, start crossfade
-    const onTimeUpdate = () => {
-      if (!active.duration || xfading) return;
-      
-      // If we reach the end of the video, instead of crossfading to the beginning, 
-      // we want to smoothly play the video backwards to the start.
-      // Since HTML5 video doesnt support negative playbackRate reliably across browsers,
-      // we do a smooth ping-pong by manually stepping backwards if playbackRate is reversed.
-      
-      // If playing forward and near end
-      if (active.dataset.reversing !== "true" && active.currentTime >= active.duration - 0.1) {
-         // Pause forward playback
-         active.pause();
-         // Simulate reverse playback by using requestAnimationFrame to step back
-         let lastTime = performance.now();
-         const reversePlay = (now: number) => {
-             // If we switched videos or user scrolled away, stop
-             if (xfading || active.dataset.reversing !== "true") return; 
-             
-             const dt = (now - lastTime) / 1000; // delta time in seconds
-             lastTime = now;
-             
-             // Step back 
-             active.currentTime = Math.max(0, active.currentTime - dt);
-             
-             // If reached start, play forward again
-             if (active.currentTime <= 0) {
-                 active.dataset.reversing = "false";
-                 active.playbackRate = 1;
-                 active.play().catch(()=>{});
-                 return;
-             }
-             requestAnimationFrame(reversePlay);
-         };
-         active.dataset.reversing = "true"; // Flag to indicate reverse mode
-         requestAnimationFrame(reversePlay);
-      }
-    };
-
-    a.addEventListener("timeupdate", onTimeUpdate);
-    b.addEventListener("timeupdate", onTimeUpdate);
-
-    // iOS/Android first-play retry
-    const tryStart = () => {
-      if (a.readyState >= 2) {
-        startPlayback();
-      } else {
-        a.addEventListener("canplay", startPlayback, { once: true });
-      }
-    };
-    tryStart();
-
-    const retryOnTouch = () => {
-      a.play().catch(() => { });
-      b.play().catch(() => { });
-    };
-    document.addEventListener("touchstart", retryOnTouch, { once: true });
-    document.addEventListener("click", retryOnTouch, { once: true });
-
-    // ── Lenis ─────────────────────────────────────────────────────────
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const lenis = new Lenis({
       duration: isIOS ? 1.2 : 1.6,
@@ -241,10 +229,14 @@ export default function Hero() {
           descRefs.current[i],
         ];
         qOpacity.current[i] = els.map((el, j) =>
-          el ? gsap.quickTo(el, "opacity", { duration: durations[j], ease: "power2.out" }) : null
+          el
+            ? gsap.quickTo(el, "opacity", { duration: durations[j], ease: "power2.out" })
+            : null
         );
         qY.current[i] = els.map((el, j) =>
-          el ? gsap.quickTo(el, "y", { duration: durations[j] + 0.08, ease: "power2.out" }) : null
+          el
+            ? gsap.quickTo(el, "y", { duration: durations[j] + 0.08, ease: "power2.out" })
+            : null
         );
       });
 
@@ -298,10 +290,6 @@ export default function Hero() {
       ctx.revert();
       lenis.destroy();
       gsap.ticker.remove(ticker);
-      a.removeEventListener("timeupdate", onTimeUpdate);
-      b.removeEventListener("timeupdate", onTimeUpdate);
-      document.removeEventListener("touchstart", retryOnTouch);
-      document.removeEventListener("click", retryOnTouch);
     };
   }, []);
 
@@ -314,6 +302,7 @@ export default function Hero() {
     display: "block",
     pointerEvents: "none",
     outline: "none",
+    willChange: "opacity",
   };
 
   return (
@@ -357,7 +346,7 @@ export default function Hero() {
             padding: 0,
           }}
         >
-          {/* ── Dual-video crossfade layer ────────────────────────── */}
+          {/* ── Video layer ──────────────────────────────────────── */}
           <div
             ref={videoWrapRef}
             style={{
@@ -370,9 +359,9 @@ export default function Hero() {
               pointerEvents: "none",
             }}
           >
-            {/* Video A — starts as active (opacity 1) */}
+            {/* Video A */}
             <video
-              ref={videoA}
+              ref={vidARef}
               muted
               playsInline
               preload="auto"
@@ -382,10 +371,9 @@ export default function Hero() {
             >
               <source src={VIDEO_SRC} type="video/mp4" />
             </video>
-
-            {/* Video B — standby (opacity 0), cross-fades in */}
+            {/* Video B — used for crossfade */}
             <video
-              ref={videoB}
+              ref={vidBRef}
               muted
               playsInline
               preload="auto"
@@ -464,7 +452,6 @@ export default function Hero() {
                     padding: "0 24px",
                   }}
                 >
-                  {/* Tag */}
                   <span
                     ref={(el) => { tagRefs.current[i] = el; }}
                     style={{
@@ -485,8 +472,16 @@ export default function Hero() {
                     <span style={{ display: "block", width: 24, height: 1, background: "rgba(255,255,255,0.3)" }} />
                   </span>
 
-                  {/* Headline — all bold, no italic */}
-                  <h1 style={{ margin: 0, padding: 0, display: "flex", flexDirection: "column", alignItems: "center", lineHeight: 0.85 }}>
+                  <h1
+                    style={{
+                      margin: 0,
+                      padding: 0,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      lineHeight: 0.85,
+                    }}
+                  >
                     <span
                       ref={(el) => { line1Refs.current[i] = el; }}
                       style={{
@@ -524,8 +519,7 @@ export default function Hero() {
                     </span>
                   </h1>
 
-                  {/* Description */}
-                  {s.desc && (
+                  {s.desc ? (
                     <p
                       ref={(el) => { descRefs.current[i] = el; }}
                       style={{
@@ -542,8 +536,7 @@ export default function Hero() {
                     >
                       {s.desc}
                     </p>
-                  )}
-                  {!s.desc && (
+                  ) : (
                     <p
                       ref={(el) => { descRefs.current[i] = el; }}
                       style={{ margin: 0, height: 0, overflow: "hidden" }}

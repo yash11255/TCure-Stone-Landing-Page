@@ -1,6 +1,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import type { Metadata } from "next";
+import Link from "next/link";
 import DoctorProfile from "@/components/home/DoctorProfile";
 import GlobalReach from "@/components/home/GlobalReach";
 import LocationLeadForm from "@/components/home/LocationLeadForm";
@@ -178,9 +179,9 @@ export default function JanakpuriSurgeryPage() {
               <h2 className="font-sans text-4xl lg:text-6xl font-extrabold text-white mb-8 tracking-tighter">Ready to be Stone-Free?</h2>
               <p className="text-blue-100 text-xl max-w-2xl mx-auto mb-12 opacity-90">Join 5000+ happy patients in Janakpuri. Book your first clinical consultation with our experts today.</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                <button className="bg-amber-500 text-white px-12 py-5 rounded-full font-sans font-bold text-lg hover:bg-white hover:text-blue-900 transition-all duration-300">
+                <Link href="/book" className="bg-amber-500 text-white px-12 py-5 rounded-full font-sans font-bold text-lg hover:bg-white hover:text-blue-900 transition-all duration-300">
                   Book Free Appointment
-                </button>
+                </Link>
                 <a className="text-white flex items-center gap-2 font-sans font-bold text-lg" href="tel:+919876543210">
                   <span className="material-symbols-outlined">call</span> Call +91 98765 43210
                 </a>

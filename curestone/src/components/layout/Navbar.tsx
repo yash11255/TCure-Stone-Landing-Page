@@ -38,7 +38,7 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "CureStone AI", href: "/checker", highlight: true },
+    { name: "Cure Stone AI", href: "/checker", highlight: true },
     { name: "RIRS", href: "/rirs" },
     { name: "URSL", href: "/ursl" },
     { name: "Mini PCNL", href: "/mini-pcnl" },

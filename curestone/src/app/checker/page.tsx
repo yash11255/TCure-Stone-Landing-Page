@@ -63,11 +63,11 @@ function renderMarkdown(text: string) {
     } else if (line.trim() === "[MAP_EMBED]") {
       elements.push(
         <div key={idx} className="my-3 w-full rounded-2xl overflow-hidden shadow-sm border border-slate-200">
-          <iframe 
-            width="100%" 
-            height="250" 
-            frameBorder="0" 
-            scrolling="no" 
+          <iframe
+            width="100%"
+            height="250"
+            frameBorder="0"
+            scrolling="no"
             src="https://maps.google.com/maps?width=100%25&height=250&hl=en&q=Cure%20Stone%20Hospital,%20Sector%2052,%20Gurugram+(Cure%20Stone%20Hospital)&t=&z=15&ie=UTF8&iwloc=B&output=embed"
           />
         </div>
@@ -125,7 +125,7 @@ export default function KidneyChatBot() {
   const [isTyping, setIsTyping] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [language, setLanguage] = useState<"en" | "hi">("en");
-  
+
   const [userName, setUserName] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
   const [isOnboarding, setIsOnboarding] = useState<boolean>(true);
@@ -208,7 +208,7 @@ export default function KidneyChatBot() {
     async (text: string) => {
       if (!text.trim() || isTyping) return;
       const userMsg: Message = { role: "user", content: text, timestamp: new Date() };
-      
+
       setMessages((prev) => {
         const newArr = [...prev, userMsg];
         return newArr.length > 10 ? newArr.slice(newArr.length - 10) : newArr;
@@ -341,11 +341,10 @@ export default function KidneyChatBot() {
                 <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div className={`flex flex-col gap-1.5 max-w-[90%] md:max-w-[75%] ${msg.role === "user" ? "items-end" : "items-start"}`}>
                     <div
-                      className={`px-5 py-3.5 rounded-[1.5rem] shadow-sm text-[14px] md:text-[15px] ${
-                        msg.role === "user"
+                      className={`px-5 py-3.5 rounded-[1.5rem] shadow-sm text-[14px] md:text-[15px] ${msg.role === "user"
                           ? "bg-primary text-white rounded-tr-none font-semibold"
                           : "bg-[#F1F5F9] text-slate-800 rounded-tl-none border border-slate-200/50"
-                      }`}
+                        }`}
                     >
                       {msg.role === "bot" ? renderMarkdown(msg.content) : msg.content}
                     </div>

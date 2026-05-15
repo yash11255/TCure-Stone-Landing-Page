@@ -71,10 +71,10 @@ export default function Sector69SurgeryPage() {
         .ambient-shadow { box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.1); }
       `}} />
 
-      
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
-        <Navbar />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
+      <Navbar />
 
       <main className="flex-grow pt-20">
         {/* Hero Section */}
@@ -99,7 +99,7 @@ export default function Sector69SurgeryPage() {
                 Best <span className="text-amber-600">Laser Kidney Stone</span> Treatment in Sector 69, Gurgaon
               </h1>
               <p className="text-xl text-slate-600 leading-relaxed max-w-2xl mb-12">
-                Experience the next generation of **minimally invasive urology**. Our expert surgeons specialize in **RIRS, PCNL, and Mini-PERC** using high-wattage Holmium Lasers for 100% stone clearance without incisions.
+                Experience the next generation of minimally invasive urology. Our expert surgeons specialize in RIRS, PCNL, and Mini-PERC using high-wattage Holmium Lasers for 100% stone clearance without incisions.
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                 <div className="flex flex-col gap-1">
@@ -134,7 +134,7 @@ export default function Sector69SurgeryPage() {
             <div className="mb-16">
               <h2 className="font-sans text-4xl lg:text-5xl font-bold text-blue-900 tracking-tight mb-6">Painless Kidney Stone Treatment Options in <span className="text-amber-600">Sector 69, Gurgaon</span></h2>
               <p className="text-lg text-slate-600 max-w-4xl">
-                Our Sector 69, Gurgaon-based urology centers offer comprehensive care for renal stones, ureteric stones, and bladder stones. By utilizing **USFDA-approved Thulium Fiber Laser (TFL)** and **Holmium:YAG technology**, we ensure patients experience minimal blood loss and the fastest recovery times in the industry.
+                Our Sector 69, Gurgaon-based urology centers offer comprehensive care for renal stones, ureteric stones, and bladder stones. By utilizing USFDA-approved Thulium Fiber Laser (TFL) and Holmium:YAG technology, we ensure patients experience minimal blood loss and the fastest recovery times in the industry.
               </p>
             </div>
 
@@ -145,7 +145,7 @@ export default function Sector69SurgeryPage() {
                   <span className="material-symbols-outlined text-blue-700 text-3xl">precision_manufacturing</span>
                 </div>
                 <h4 className="font-sans text-2xl font-bold text-blue-900 mb-4">RIRS Laser Surgery</h4>
-                <p className="text-slate-600 leading-relaxed">The most advanced **Retrograde Intrarenal Surgery** in Sector 69, Gurgaon. No cuts, no scars—ideal for stones located deep within the kidney. Complete discharge within 24 hours.</p>
+                <p className="text-slate-600 leading-relaxed">The most advanced Retrograde Intrarenal Surgery in Sector 69, Gurgaon. No cuts, no scars—ideal for stones located deep within the kidney. Complete discharge within 24 hours.</p>
               </div>
 
               {/* Card 2 */}
@@ -154,7 +154,7 @@ export default function Sector69SurgeryPage() {
                   <span className="material-symbols-outlined text-blue-700 text-3xl">personal_injury</span>
                 </div>
                 <h4 className="font-sans text-2xl font-bold text-blue-900 mb-4">PCNL & Mini-PERC</h4>
-                <p className="text-slate-600 leading-relaxed">Specialized treatment for **Large Staghorn Stones** (20mm). Our Sector 69, Gurgaon urologists use ultra-miniature scopes for faster healing compared to traditional open surgery.</p>
+                <p className="text-slate-600 leading-relaxed">Specialized treatment for Large Staghorn Stones (20mm). Our Sector 69, Gurgaon urologists use ultra-miniature scopes for faster healing compared to traditional open surgery.</p>
               </div>
 
               {/* Card 3 */}
@@ -163,7 +163,7 @@ export default function Sector69SurgeryPage() {
                   <span className="material-symbols-outlined text-blue-700 text-3xl">verified</span>
                 </div>
                 <h4 className="font-sans text-2xl font-bold text-blue-900 mb-4">100% Cashless Support</h4>
-                <p className="text-slate-600 leading-relaxed">We are empanelled with all major **Insurance TPAs and Corporates** in Gurgaon. Our team handles your pre-auth and documentation for a zero-hassle experience.</p>
+                <p className="text-slate-600 leading-relaxed">We are empanelled with all major Insurance TPAs and Corporates in Gurgaon. Our team handles your pre-auth and documentation for a zero-hassle experience.</p>
               </div>
             </div>
           </div>
